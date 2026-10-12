@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peter's Birthday Maritime Telemetry Quiz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Glowing effects & Marine Telemetry Styling */
+        .neon-border {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25), inset 0 0 15px rgba(6, 182, 212, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+        }
+        .neon-glow-cyan {
+            text-shadow: 0 0 8px rgba(6, 182, 212, 0.7);
+        }
+        .neon-glow-blue {
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
+        }
+        .panel-bg {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+        }
+        
+        /* Custom animated sonar canvas background */
+        #sonarCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Animated SVG Koreans & Aliens */
+        @keyframes stampFeet {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-4px) rotate(-3deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(-4px) rotate(3deg); }
+        }
+        .animate-stamp {
+            animation: stampFeet 0.4s infinite ease-in-out;
+        }
+
+        @keyframes beamUp {
+            0% { opacity: 0.3; transform: scaleX(0.9); }
+            50% { opacity: 0.8; transform: scaleX(1.1); }
+            100% { opacity: 0.3; transform: scaleX(0.9); }
+        }
+        .animate-beam {
+            animation: beamUp 1.5s infinite ease-in-out;
+        }
+
+        @keyframes floatUfo {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-ufo {
+            animation: floatUfo 3s infinite ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0891b2;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-cyan-500 selection:text-black">
+
+    <canvas id="sonarCanvas"></canvas>
+
+    <!-- Main Outer Wrapper -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <header class="w-full border-b border-cyan-900/60 panel-bg sticky top-0 z-50 px-4 py-3 shadow-lg">
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                
+                <!-- Brand Title & Audio Toggle -->
+                <div class="flex items-center justify-between w-full md:w-auto">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></div>
+                        <span class="font-mono text-xs tracking-widest text-cyan-400 uppercase font-bold">MAR-TELEMETRY v4.2</span>
+                        <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono">PETER_SYS</span>
+                    </div>
+                    
+                    <button id="audioToggle" onclick="toggleAudio()" class="md:hidden flex items-center gap-2 text-xs font-mono px-3 py-1.5 rounded-lg border border-cyan-700/50 bg-slate-900/80 text-cyan-400 hover:bg-cyan-950 transition">
+                        <i id="audioIcon" class="fas fa-volume-mute"></i>
+                        <span id="audioStatus">AUDIO OFF</span>
+                    </button>
+                </div>
+
+                <!-- Telemetry Metrics Bar (Visible during active test) -->
+                <div id="telemetryBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto text-xs font-mono">
+                    
+                    <!-- 1. Quiz Stage -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 flex flex-col justify-between shadow-inner">
+                        <div class="text-slate-400 text-[10px] uppercase tracking-wider flex justify-between">
+                            <span>STAGE</span>
+                            <i class="fas fa-layer-group text-cyan-500/70"></i>
+                        </div>
+                        <div class="text-sm font-bold text-cyan-300 mt-1" id="metricStage">0 / 10</div>
+                    </div>
+
+                    <!-- 2. Line Reeled -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 flex flex-col justify-between shadow-inner">
+                        <div class="text-slate-400 text-[10px] uppercase tracking-wider flex justify-between">
+                            <span>LINE REELED</span>
+                            <i class="fas fa-dharmachakra text-cyan-500/70"></i>
+                        </div>
+                        <div class="flex items-center gap-2 mt-1">
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+                                <div id="metricLineBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                            <span id="metricLineText" class="text-xs text-cyan-300 font-bold">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Current Depth -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 flex flex-col justify-between shadow-inner">
+                        <div class="text-slate-400 text-[10px] uppercase tracking-wider flex justify-between">
+                            <span>DEPTH</span>
+                            <i class="fas fa-arrows-up-down text-cyan-500/70"></i>
+                        </div>
+                        <div class="text-sm font-bold text-blue-400 mt-1" id="metricDepth">500 m</div>
+                    </div>
+
+                    <!-- 4. Tension Load -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 flex flex-col justify-between shadow-inner">
+                        <div class="text-slate-400 text-[10px] uppercase tracking-wider flex justify-between">
+                            <span>LOAD TENSION</span>
+                            <i class="fas fa-gauge-high text-cyan-500/70"></i>
+                        </div>
+                        <div class="flex items-center gap-1.5 mt-1">
+                            <span id="metricTensionText" class="text-xs font-bold text-emerald-400">IDLE (0kg)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Sound Toggle -->
+                <button onclick="toggleAudio()" class="hidden md:flex items-center gap-2 text-xs font-mono px-3 py-2 rounded-lg border border-cyan-700/50 bg-slate-900/80 text-cyan-400 hover:bg-cyan-950 transition">
+                    <i id="audioIconDesktop" class="fas fa-volume-mute"></i>
+                    <span id="audioStatusDesktop">AUDIO OFF</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-grow flex items-center justify-center p-4 sm:p-6 max-w-4xl mx-auto w-full my-4">
+            
+            <div id="appContainer" class="w-full panel-bg rounded-2xl neon-border p-6 sm:p-10 shadow-2xl relative overflow-hidden transition-all duration-300">
+                <!-- Content will be injected here via JS -->
+            </div>
+
+        </main>
+
+        <footer class="w-full border-t border-slate-800/80 panel-bg py-3 px-4 text-center text-xs font-mono text-slate-500">
+            <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+                <div>SYSTEM STATUS: <span class="text-emerald-400 font-bold">ONLINE</span> | SONAR DEPTH: 1000M MAX</div>
+                <div>HAPPY BIRTHDAY PETER &copy; 2026 DEEP SEA RESEARCH LAB</div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let audioCtx = null;
+        let soundEnabled = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            if (soundEnabled && !audioCtx) {
+                initAudio();
+            }
+            
+            const statusText = soundEnabled ? "AUDIO ON" : "AUDIO OFF";
+            const iconClass = soundEnabled ? "fas fa-volume-high text-cyan-400" : "fas fa-volume-mute text-slate-500";
+            
+            document.getElementById("audioStatus").innerText = statusText;
+            document.getElementById("audioStatusDesktop").innerText = statusText;
+            document.getElementById("audioIcon").className = iconClass;
+            document.getElementById("audioIconDesktop").className = iconClass;
+
+            if (soundEnabled) playBeep(800, 0.05);
+        }
+
+        function playBeep(freq = 600, duration = 0.08, type = 'sine') {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
+        }
+
+        function playReelSound() {
+            if (!soundEnabled || !audioCtx) return;
+            playBeep(400, 0.03, 'sawtooth');
+            setTimeout(() => playBeep(600, 0.03, 'sawtooth'), 40);
+        }
+
+        function playSplashSound() {
+            if (!soundEnabled || !audioCtx) return;
+            playBeep(150, 0.2, 'triangle');
+            setTimeout(() => playBeep(300, 0.15, 'sine'), 100);
+        }
+
+        const canvas = document.getElementById('sonarCanvas');
+        const ctx = canvas.getContext('2d');
+        let angle = 0;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function drawSonar() {
+            ctx.fillStyle = 'rgba(3, 7, 18, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const maxRadius = Math.max(canvas.width, canvas.height) * 0.7;
+
+            // Draw concentric rings
+            ctx.strokeStyle = 'rgba(6, 182, 212, 0.08)';
+            ctx.lineWidth = 1;
+            for (let r = 100; r < maxRadius; r += 120) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Radar Line
+            const sweepX = centerX + Math.cos(angle) * maxRadius;
+            const sweepY = centerY + Math.sin(angle) * maxRadius;
+
+            const gradient = ctx.createLinearGradient(centerX, centerY, sweepX, sweepY);
+            gradient.addColorStop(0, 'rgba(6, 182, 212, 0.3)');
+            gradient.addColorStop(1, 'rgba(6, 182, 212, 0)');
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, maxRadius, angle - 0.2, angle);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            angle += 0.015;
+            requestAnimationFrame(drawSonar);
+        }
+        drawSonar();
+
+        const quizSequence = [
+            { id: 'intro', type: 'intro' },
+            { id: 'q1', type: 'question', number: 1, text: "First, let's see how you're feeling today.", options: [
+                { label: "I feel pretty good", value: "good", trait: "Snapper" },
+                { label: "I feel pretty bad", value: "bad", trait: "Kahawai" },
+                { label: "I feel pretty ✨", value: "pretty", trait: "Kingfish" }
+            ]},
+            { id: 't1', type: 'transition', title: "AN ANGLER'S PATIENCE", text: "Today is a beautiful day and you decide to go fishing on a secluded island. However, it’s been hours and you still have not caught anything. You are getting impatient..", svg: 'korean_impatient' },
+            { id: 't2', type: 'transition', title: "HYPOTHETICAL TELEMETRY", text: "Here are some hypothetical scenarios, to keep you entertained while you wait for a fish to bite.", buttonText: "OK", svg: null },
+            { id: 'q2', type: 'question', number: 2, text: "A tiny fairy lives on top of your head...", options: [
+                { label: "Evict it and live in fear", value: "evict", trait: "Snapper" },
+                { label: "Let it stay and become friends", value: "friends", trait: "Rainbow Trout" },
+                { label: "Shave your head", value: "shave", trait: "Kahawai" }
+            ]},
+            { id: 'q3', type: 'question', number: 3, text: "If you were the last living being on Earth, what would you do?", options: [
+                { label: "Use the opportunity and build a new civilization from scratch", value: "rebuild", trait: "Kingfish" },
+                { label: "Nothing. You'd disappear too, because there's no one left to see you exist", value: "disappear", trait: "Snapper" },
+                { label: "Wander around and try to make friends with the bugs", value: "bugs", trait: "Rainbow Trout" }
+            ]},
+            { id: 'q4', type: 'question', number: 4, text: "It's a beautiful sunny day, and you're dehydrated. What snack are you bringing?", options: [
+                { label: "Microwave popcorn, but there's no microwave, so you eat the raw kernels", value: "popcorn", trait: "Kahawai" },
+                { label: "The grass looks green and yummy, so you just bite into it", value: "grass", trait: "Rainbow Trout" },
+                { label: "A whole cow, disguised as a bag of chips", value: "cow", trait: "Kingfish" }
+            ]},
+            { id: 'q5', type: 'question', number: 5, text: "The aliens have, for whatever reason, decided to abduct you. You feel pretty indifferent about it. What do you bring from Earth?", options: [
+                { label: "Your Vyvanse, so you can be productive in space", value: "vyvanse", trait: "Kingfish" },
+                { label: "Kimchi", value: "kimchi", trait: "Snapper" },
+                { label: "A pen and paper, to record your experiences", value: "pen", trait: "Rainbow Trout" }
+            ]},
+            { id: 't_abduct', type: 'abduction_graphic' },
+            { id: 't_alien_return', type: 'alien_return' },
+            { id: 'q6', type: 'question', number: 6, text: "You went somewhere because they promised free food. Turns out it's a cult. Thankfully, they don't do anything bad or weird. The only rule is that you have to tell everyone in your life you're in a weird cult. Do you join?", options: [
+                { label: "Join", value: "join", trait: "Kahawai" }
+            ]},
+            { id: 't3', type: 'transition', title: "REACTION TEST", text: "Now let's see how you'd react in these situations.", buttonText: "OK", svg: null },
+            { id: 'q7', type: 'question', number: 7, text: "You're offered $50,000, but for the rest of your life, every time you enter a bedroom there's a 10% chance a horse is already in there. You can't remove the horse. Do you accept?", options: [
+                { label: "Yes", value: "yes", trait: "Kingfish" },
+                { label: "No", value: "no", trait: "Snapper" }
+            ]},
+            { id: 'q8', type: 'question', number: 8, text: "You're given the house of your dreams for free. But one room is occupied by someone you never see. They never cause any trouble, but sometimes you hear them crying at night. Do you accept?", options: [
+                { label: "Yes", value: "yes", trait: "Rainbow Trout" },
+                { label: "No", value: "no", trait: "Kahawai" }
+            ]},
+            { id: 'q9', type: 'question', number: 9, text: "A goose the size of a golden retriever moves in next door...", options: [
+                { label: "Leave a tiny welcome basket on its doorstep", value: "basket", trait: "Rainbow Trout" },
+                { label: "Stare back until one of you blinks", value: "stare", trait: "Snapper" },
+                { label: "Start a podcast together, because clearly it has a lot to say", value: "podcast", trait: "Kingfish" }
+            ]},
+            { id: 'q10', type: 'q10_freetext' },
+            { id: 'results', type: 'results' }
+        ];
+
+        let currentIndex = 0;
+        let answers = {};
+        let q10Message = "";
+
+        function updateTelemetry() {
+            const currentStep = quizSequence[currentIndex];
+            let questionNum = 0;
+
+            // Calculate total questions up to Q10
+            if (currentStep.type === 'question') {
+                questionNum = currentStep.number;
+            } else if (currentStep.id === 'q10') {
+                questionNum = 10;
+            } else {
+                // Find nearest previous question number
+                for (let i = currentIndex; i >= 0; i--) {
+                    if (quizSequence[i].type === 'question') {
+                        questionNum = quizSequence[i].number;
+                        break;
+                    }
+                }
+            }
+
+            if (currentStep.id === 'results') questionNum = 10;
+
+            const stageElem = document.getElementById('metricStage');
+            const lineBar = document.getElementById('metricLineBar');
+            const lineText = document.getElementById('metricLineText');
+            const depthElem = document.getElementById('metricDepth');
+            const tensionElem = document.getElementById('metricTensionText');
+
+            const pct = Math.min(100, Math.round((questionNum / 10) * 100));
+            
+            stageElem.innerText = `${questionNum} / 10`;
+            lineBar.style.width = `${pct}%`;
+            lineText.innerText = `${pct}%`;
+
+            // Depth count down from 500m to 0m
+            const currentDepth = Math.max(0, 500 - Math.round((questionNum / 10) * 500));
+            depthElem.innerText = `${currentDepth} m`;
+
+            // Dynamic tension reading
+            if (questionNum === 0) {
+                tensionElem.innerText = "IDLE (0kg)";
+                tensionElem.className = "text-xs font-bold text-emerald-400";
+            } else if (questionNum < 5) {
+                tensionElem.innerText = "LOW (12kg)";
+                tensionElem.className = "text-xs font-bold text-cyan-400";
+            } else if (questionNum < 9) {
+                tensionElem.innerText = "MED (48kg)";
+                tensionElem.className = "text-xs font-bold text-amber-400";
+            } else {
+                tensionElem.innerText = "HIGH (95kg)";
+                tensionElem.className = "text-xs font-bold text-rose-500 animate-pulse";
+            }
+        }
+
+        function nextStep() {
+            if (currentIndex < quizSequence.length - 1) {
+                currentIndex++;
+                playReelSound();
+                renderStep();
+            }
+        }
+
+        function prevStep() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                playBeep(400, 0.05);
+                renderStep();
+            }
+        }
+
+        function selectOption(qId, trait, value) {
+            answers[qId] = trait;
+            nextStep();
+        }
+
+        function renderStep() {
+            updateTelemetry();
+            const container = document.getElementById('appContainer');
+            const step = quizSequence[currentIndex];
+
+            let html = "";
+
+            // Back button banner (if applicable)
+            const showBack = currentIndex > 0 && step.id !== 'results';
+            const backButtonHtml = showBack ? `
+                <button onclick="prevStep()" class="mb-6 flex items-center gap-2 text-xs font-mono text-cyan-400/80 hover:text-cyan-300 transition bg-slate-900/60 px-3 py-1.5 rounded-lg border border-cyan-900/60 w-fit">
+                    <i class="fas fa-chevron-left"></i> REWIND TELEMETRY
+                </button>
+            ` : '';
+
+            if (step.id === 'intro') {
+                html = `
+                    <div class="text-center py-8">
+                        <div class="inline-block p-4 rounded-full bg-cyan-950/80 border border-cyan-500/30 mb-6 animate-bounce">
+                            <i class="fas fa-anchor text-4xl text-cyan-400"></i>
+                        </div>
+                        <h1 class="text-3xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-300 mb-4 tracking-tight">
+                            Happy Birthday, Peter!
+                        </h1>
+                        <p class="text-slate-300 max-w-lg mx-auto mb-8 text-sm sm:text-base leading-relaxed font-light">
+                            Welcome aboard the Deep Sea Research Vessel. Sonar signals indicate a rare specimen waiting in the depths below. Let's calibrate your maritime personality telemetry.
+                        </p>
+                        <button onclick="nextStep()" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold tracking-wider uppercase font-mono shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition active:translate-y-0">
+                            LET'S TAKE A TEST <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                `;
+            } 
+            else if (step.type === 'question') {
+                html = `
+                    ${backButtonHtml}
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-2 font-mono text-xs text-cyan-400">
+                            <span class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800">QUESTION ${step.number} / 10</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-100 leading-snug">
+                            ${step.text}
+                        </h2>
+                        <div class="grid grid-cols-1 gap-3 pt-2">
+                            ${step.options.map(opt => `
+                                <button onclick="selectOption('${step.id}', '${opt.trait}', '${opt.value}')" class="p-4 rounded-xl border border-slate-700/80 bg-slate-900/60 hover:bg-cyan-950/60 hover:border-cyan-500/60 text-left transition duration-200 group flex items-center justify-between">
+                                    <span class="text-sm sm:text-base text-slate-200 group-hover:text-cyan-200 font-medium">${opt.label}</span>
+                                    <i class="fas fa-chevron-right text-slate-600 group-hover:text-cyan-400 transition-transform group-hover:translate-x-1"></i>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            else if (step.type === 'transition') {
+                let svgGraphic = "";
+                if (step.svg === 'korean_impatient') {
+                    svgGraphic = `
+                        <div class="my-6 flex justify-center">
+                            <svg class="w-32 h-32 animate-stamp" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Fishing Boat -->
+                                <path d="M10 70 L90 70 L80 85 L20 85 Z" fill="#1e293b" stroke="#0891b2" stroke-width="2"/>
+                                <!-- Impatient Little Korean Fisher -->
+                                <circle cx="50" cy="35" r="10" fill="#fca5a5"/>
+                                <!-- Fisher Cap -->
+                                <path d="M38 32 C38 25, 62 25, 62 32 Z" fill="#0284c7"/>
+                                <path d="M35 32 L65 32" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+                                <!-- Body & Arms crossed -->
+                                <rect x="42" y="45" width="16" height="20" rx="3" fill="#0369a1"/>
+                                <path d="M40 50 L60 50" stroke="#fca5a5" stroke-width="4" stroke-linecap="round"/>
+                                <!-- Angry eyes -->
+                                <path d="M46 34 L49 36" stroke="#000" stroke-width="1.5"/>
+                                <path d="M54 34 L51 36" stroke="#000" stroke-width="1.5"/>
+                                <!-- Fishing Rod -->
+                                <path d="M60 50 L95 20" stroke="#94a3b8" stroke-width="2"/>
+                                <path d="M95 20 L95 75" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 2"/>
+                            </svg>
+                        </div>
+                    `;
+                }
+
+                html = `
+                    ${backButtonHtml}
+                    <div class="text-center py-4">
+                        <div class="font-mono text-xs text-cyan-400 tracking-widest uppercase mb-2">[ NAV LOG UPDATE ]</div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-100 mb-4">${step.title || 'TELEMETRY SEQUENCE'}</h2>
+                        ${svgGraphic}
+                        <p class="text-slate-300 max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-8 font-light">
+                            ${step.text}
+                        </p>
+                        <button onclick="nextStep()" class="px-8 py-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-mono tracking-wider uppercase shadow-lg shadow-cyan-600/30 transition">
+                            ${step.buttonText || 'CONTINUE'} <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                `;
+            }
+            else if (step.type === 'abduction_graphic') {
+                html = `
+                    ${backButtonHtml}
+                    <div class="text-center py-4">
+                        <div class="font-mono text-xs text-purple-400 tracking-widest uppercase mb-2">[ EXTRA-TERRESTRIAL CONTACT ]</div>
+                        
+                        <div class="my-6 relative flex justify-center items-center h-48">
+                            <!-- Animated UFO -->
+                            <div class="absolute top-0 animate-ufo z-10">
+                                <svg class="w-32 h-16" viewBox="0 0 100 50">
+                                    <ellipse cx="50" cy="25" rx="40" ry="12" fill="#475569" stroke="#a855f7" stroke-width="2"/>
+                                    <ellipse cx="50" cy="20" rx="20" ry="12" fill="#c084fc" opacity="0.8"/>
+                                    <circle cx="30" cy="27" r="2" fill="#fef08a"/>
+                                    <circle cx="50" cy="29" r="2" fill="#fef08a"/>
+                                    <circle cx="70" cy="27" r="2" fill="#fef08a"/>
+                                </svg>
+                            </div>
+                            <!-- Abduction Beam -->
+                            <div class="absolute top-12 w-32 h-32 bg-gradient-to-b from-purple-500/40 to-transparent animate-beam clip-path-beam"></div>
+                            <!-- Little Fisher Being Lifted -->
+                            <div class="absolute bottom-4 animate-bounce">
+                                <svg class="w-12 h-12" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="35" r="10" fill="#fca5a5"/>
+                                    <rect x="42" y="45" width="16" height="20" rx="3" fill="#0369a1"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <p class="text-slate-300 max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-6 font-light">
+                            A bright tractor beam locks onto your fishing boat! You are being lifted into space!
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                            <button onclick="nextStep()" class="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold font-mono tracking-wider uppercase transition">
+                                HELP! <i class="fas fa-hand-holding-medical ml-1"></i>
+                            </button>
+                            <button onclick="nextStep()" class="px-6 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-mono tracking-wider uppercase transition">
+                                LET'S GO! <i class="fas fa-rocket ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            else if (step.type === 'alien_return') {
+                html = `
+                    ${backButtonHtml}
+                    <div class="text-center py-6">
+                        <div class="inline-block p-3 rounded-full bg-purple-950 border border-purple-500/40 text-purple-400 mb-4">
+                            <i class="fas fa-user-astronaut text-3xl"></i>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-100 mb-4">ALIEN TELEMETRY EJECT</h2>
+                        <p class="text-slate-300 max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-8 font-light">
+                            Oh no, the aliens have realized that you are too annoying and ask too many questions. They don’t want you.
+                        </p>
+                        <button onclick="nextStep()" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold font-mono tracking-wider uppercase shadow-lg transition">
+                            BACK TO FISHING <i class="fas fa-fish ml-2"></i>
+                        </button>
+                    </div>
+                `;
+            }
+            else if (step.id === 'q10') {
+                html = `
+                    ${backButtonHtml}
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-2 font-mono text-xs text-cyan-400">
+                            <span class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800">QUESTION 10 / 10 • FINAL SPECIES TRANSMISSION</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-100 leading-snug">
+                            Okay, last one, and this one's real. If you could send a message to your younger self from 10 years ago, what would you say?
+                        </h2>
+                        <div class="pt-2">
+                            <textarea id="q10Input" rows="4" class="w-full bg-slate-900/90 border border-cyan-700/60 rounded-xl p-4 text-slate-100 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono text-sm placeholder-slate-500" placeholder="Type your message to 10-years-ago Peter...">${q10Message}</textarea>
+                        </div>
+                        <button onclick="submitQ10()" class="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold font-mono tracking-wider uppercase shadow-lg shadow-cyan-500/20 transition">
+                            TRANSMIT TELEMETRY & REEL IN <i class="fas fa-check-circle ml-2"></i>
+                        </button>
+                    </div>
+                `;
+            }
+            else if (step.type === 'results') {
+                renderResults();
+                return;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function submitQ10() {
+            const textarea = document.getElementById('q10Input');
+            if (textarea) {
+                q10Message = textarea.value.trim() || "Buy Bitcoin and don't forget to laugh!";
+            }
+            playSplashSound();
+            nextStep();
+        }
+
+        function calculateResult() {
+            const counts = { Snapper: 0, Kahawai: 0, "Rainbow Trout": 0, Kingfish: 0 };
+            Object.values(answers).forEach(trait => {
+                if (counts[trait] !== undefined) counts[trait]++;
+            });
+
+            let winner = "Snapper";
+            let maxCount = -1;
+            for (const [fish, count] of Object.entries(counts)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    winner = fish;
+                }
+            }
+            return winner;
+        }
+
+        function renderResults() {
+            const winner = calculateResult();
+            const container = document.getElementById('appContainer');
+
+            const descriptions = {
+                "Snapper": "You are a Snapper! Practical, sharp, and down-to-earth. You don't let nonsense distract you from what matters, though you might occasionally judge people who try to start podcasts with geese.",
+                "Kahawai": "You are a Kahawai! Energetic, slightly chaotic, and always up for an adventure (or a cult with free food). You roll with the punches, even when eating raw popcorn kernels.",
+                "Rainbow Trout": "You are a Rainbow Trout! Empathetic, imaginative, and deeply curious. You're the kind of person who leaves welcome baskets for giant geese and tries to make friends with bugs.",
+                "Kingfish": "You are a Kingfish! Bold, ambitious, and unstoppable. Whether it's taking a 10% horse gamble or rebuilding civilization from scratch, you play to win."
+            };
+
+            const icons = {
+                "Snapper": "fa-fish text-rose-400",
+                "Kahawai": "fa-water text-cyan-400",
+                "Rainbow Trout": "fa-wand-magic-sparkles text-amber-300",
+                "Kingfish": "fa-crown text-yellow-400"
+            };
+
+            container.innerHTML = `
+                <div class="text-center py-6 space-y-6">
+                    <div class="inline-block px-4 py-1.5 rounded-full bg-cyan-950 border border-cyan-500/50 text-cyan-300 font-mono text-xs tracking-widest uppercase animate-pulse">
+                        <i class="fas fa-check-double mr-2"></i> CATCH SUCCESSFUL!
+                    </div>
+
+                    <div class="my-4">
+                        <div class="w-24 h-24 mx-auto rounded-full bg-slate-900 border-2 border-cyan-400/60 flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-4">
+                            <i class="fas ${icons[winner]} text-5xl"></i>
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-indigo-300 tracking-tight">
+                            ${winner}
+                        </h2>
+                    </div>
+
+                    <p class="text-slate-200 max-w-xl mx-auto text-base sm:text-lg leading-relaxed bg-slate-900/80 p-6 rounded-2xl border border-slate-800 text-left">
+                        ${descriptions[winner]}
+                    </p>
+
+                    ${q10Message ? `
+                        <div class="max-w-xl mx-auto text-left bg-cyan-950/40 border-l-4 border-cyan-400 p-4 rounded-r-xl">
+                            <div class="font-mono text-xs text-cyan-400 uppercase tracking-wider mb-1">
+                                <i class="fas fa-quote-left mr-1"></i> Message to 10-Years-Ago Peter:
+                            </div>
+                            <blockquote class="text-slate-300 italic font-mono text-sm">
+                                "${q10Message}"
+                            </blockquote>
+                        </div>
+                    ` : ''}
+
+                    <div class="pt-4">
+                        <button onclick="restartQuiz()" class="px-8 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold font-mono tracking-wider uppercase border border-cyan-500/40 transition">
+                            <i class="fas fa-rotate-right mr-2"></i> RESTART TEST
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function restartQuiz() {
+            currentIndex = 0;
+            answers = {};
+            q10Message = "";
+            renderStep();
+        }
+
+        window.onload = function() {
+            renderStep();
+        };
+    </script>
+</body>
+</html>
