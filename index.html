@@ -457,6 +457,9 @@
 #dance{position:fixed;inset:0;z-index:100;display:none;background:#02030a;overflow:hidden}
 #dance.on{display:block}
 #dance svg{position:absolute;inset:0;width:100%;height:100%}
+#host{position:fixed;inset:0;z-index:100;display:none;background:#02030a;overflow:hidden}
+#host.on{display:block}
+#host svg{position:absolute;inset:0;width:100%;height:100%}
 .dz{animation:dz .45s ease-in-out infinite alternate}
 @keyframes dz{from{transform:translateY(0)}to{transform:translateY(-14px)}}
 .flick{animation:flick .3s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
@@ -521,9 +524,34 @@
       <div class="abd-sub">Extraterrestrials are beaming Peter out of his boat into space!</div>
     </div>
     <div class="abd-ui abd-bot">
-      <button class="btn-back" onclick="prevStep()">← BACK</button>
+      <button class="btn-back" onclick="hostage()">← BACK</button>
       <button class="action-btn" onclick="nextStep()">HELP!</button>
       <button class="action-btn" style="background:linear-gradient(135deg,#ff3366,#ff7700)" onclick="nextStep()">LET'S GO!</button>
+    </div>
+  </div>
+
+  <div id="host">
+    <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <g id="aln"><line x1="10" y1="-26" x2="58" y2="-34" stroke="#6bd46b" stroke-width="7" stroke-linecap="round"/><rect x="52" y="-44" width="30" height="12" rx="3" fill="#444"/><circle cx="84" cy="-38" r="5" fill="#ff3366"/><ellipse cx="0" cy="-14" rx="16" ry="30" fill="#6bd46b"/><ellipse cx="0" cy="-70" rx="34" ry="44" fill="#7be37b"/><ellipse cx="-15" cy="-66" rx="11" ry="17" fill="#0a0a12" transform="rotate(20 -15 -66)"/><ellipse cx="15" cy="-66" rx="11" ry="17" fill="#0a0a12" transform="rotate(-20 15 -66)"/><circle cx="-18" cy="-72" r="3" fill="#fff"/><circle cx="12" cy="-72" r="3" fill="#fff"/><line x1="-14" y1="-110" x2="-22" y2="-132" stroke="#6bd46b" stroke-width="3"/><circle cx="-22" cy="-134" r="5" fill="#ffe066"/><line x1="14" y1="-110" x2="22" y2="-132" stroke="#6bd46b" stroke-width="3"/><circle cx="22" cy="-134" r="5" fill="#ffe066"/></g>
+      </defs>
+      <rect x="-30" y="-30" width="860" height="560" fill="#07140f"/>
+      <rect x="-30" y="-30" width="860" height="70" fill="#1d2b2a"/>
+      <circle class="lt" cx="120" cy="34" r="7" fill="#ff3366"/><circle cx="260" cy="34" r="7" fill="#ffe066"/><circle class="lt" cx="400" cy="34" r="7" fill="#ff3366"/><circle cx="540" cy="34" r="7" fill="#ffe066"/><circle class="lt" cx="680" cy="34" r="7" fill="#ff3366"/>
+      <polygon points="340,40 460,40 580,500 220,500" fill="#b6ff9a" opacity=".12"/>
+      <rect x="-30" y="440" width="860" height="80" fill="#0e2a20"/>
+      <g transform="translate(130,470) scale(1.5)"><use href="#aln" class="ufo-bob"/></g>
+      <g transform="translate(270,490) scale(1.2)"><use href="#aln" class="ufo-bob" style="animation-delay:-.4s"/></g>
+      <g transform="translate(670,470) scale(-1.5,1.5)"><use href="#aln" class="ufo-bob" style="animation-delay:-.2s"/></g>
+      <g transform="translate(530,490) scale(-1.2,1.2)"><use href="#aln" class="ufo-bob" style="animation-delay:-.6s"/></g>
+      <g transform="translate(400,470) scale(1.4)"><g class="abd-shake"><rect x="-17" y="-62" width="34" height="46" rx="8" fill="#0077ff"/><line x1="-17" y1="-48" x2="17" y2="-40" stroke="#c68a4a" stroke-width="5"/><line x1="-17" y1="-36" x2="17" y2="-28" stroke="#c68a4a" stroke-width="5"/><circle cx="0" cy="-86" r="22" fill="#ffe0bd"/><path d="M-22 -88 Q-22 -112 0 -112 Q22 -112 22 -88 Q10 -98 0 -96 Q-10 -98 -22 -88Z" fill="#332211"/><circle cx="-8" cy="-86" r="6" fill="#fff"/><circle cx="8" cy="-86" r="6" fill="#fff"/><circle cx="-8" cy="-85" r="2.5" fill="#111"/><circle cx="8" cy="-85" r="2.5" fill="#111"/><ellipse cx="0" cy="-70" rx="6" ry="8" fill="#7a1f2b"/><path d="M26 -96 q4 8 0 12 q-4 -4 0 -12Z" fill="#6fd3ff"/></g></g>
+    </svg>
+    <div class="abd-ui abd-top">
+      <div class="abd-title" style="color:#7be37b;text-shadow:0 0 18px #7be37b">HELD HOSTAGE 👽</div>
+      <div class="abd-sub">The aliens have abducted you, you think you can just go back and be saved?</div>
+    </div>
+    <div class="abd-ui abd-bot">
+      <button class="action-btn" onclick="document.getElementById('host').classList.remove('on')">OH NO... 😰</button>
     </div>
   </div>
 
@@ -596,9 +624,10 @@
     </svg>
     <div class="abd-ui abd-top">
       <div class="abd-title" style="color:#ffd166;text-shadow:0 0 18px #ffd166">REJECTED BY ALIENS! 🛸</div>
-      <div class="abd-sub">The aliens realized you are far too annoying and ask way too many questions. They dropped you right back into your boat.</div>
+      
     </div>
     <div class="abd-ui abd-bot">
+      <div class="abd-sub" style="width:100%;max-width:640px;margin:0 0 4px;background:rgba(2,3,10,.7);padding:10px 14px;border-radius:12px">The aliens realized you are far too annoying and ask way too many questions. They dropped you right back into your boat.</div>
       <button class="btn-back" onclick="prevStep()">← BACK</button>
       <button class="action-btn" onclick="nextStep()">BACK TO FISHING →</button>
     </div>
@@ -844,7 +873,7 @@
         <h2 class="screen-title">Question 10 — Message Through Time</h2>
         <p class="screen-subtitle">"Okay, last one, and this one's real. If you could send a message to your younger self from 10 years ago, what would you say?"</p>
         <textarea class="custom-textarea" id="q10Text" placeholder="Type your message here..." oninput="this.style.borderColor=''"></textarea>
-        <p class="screen-subtitle" style="font-size:.85rem">🔒 No message, no fish. Write something nice.</p>
+        <p class="screen-subtitle" style="font-size:.85rem">🔒 No message, no fish. Peter can't reel in his catch until he sends one.</p>
         <div class="nav-buttons-row">
           <button class="btn-back" onclick="prevStep()">← BACK</button>
           <button class="action-btn" onclick="submitQ10()">REEL IN FINAL CATCH 🎣</button>
@@ -893,6 +922,10 @@
       document.getElementById('audioBtn').innerText = audioEnabled ? '🔊 AUDIO: ON' : 'MUTE: OFF';
     }
 
+    function hostage() {
+      playTone(150, 0.4);
+      document.getElementById('host').classList.add('on');
+    }
     function sirenSfx() {
       if (!audioEnabled) return;
       try {
@@ -1059,12 +1092,11 @@
       },
       {
         id: 'Q9',
-        title: 'Q8 — The goose',
-        prompt: '"A goose the size of a golden retriever moves in next door. It isn\'t aggressive, but every morning it stands at your window and stares at you. What do you do?"',
+        title: 'Q8 — Would you rather',
+        prompt: '"Would you rather..."',
         options: [
-          { text: 'Leave a tiny welcome basket on its doorstep', scores: { Snapper: 2, Trout: 1 } },
-          { text: 'Stare back until one of you blinks', scores: { Kingfish: 2, Kahawai: 1 } },
-          { text: 'Start a podcast together, because clearly it has a lot to say', scores: { Kahawai: 2, Snapper: 1 } }
+          { text: 'Live together with someone that hates you', scores: { Snapper: 2, Trout: 1 } },
+          { text: 'Live together with someone that you hate', scores: { Kingfish: 2, Kahawai: 1 } }
         ]
       }
     ];
@@ -1223,6 +1255,7 @@
       document.getElementById('win').classList.remove('on');
       document.getElementById('ret').classList.remove('on');
       document.getElementById('dance').classList.remove('on');
+      document.getElementById('host').classList.remove('on');
       const step = sequence[stepIndex];
 
       if (step.type === 'intro') {
