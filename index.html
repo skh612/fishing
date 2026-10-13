@@ -1,700 +1,1276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peter's Birthday Maritime Telemetry Quiz</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonts: Inter & JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Peter's Birthday Fishing Personality Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #060e18;
+      --panel-bg: rgba(11, 21, 38, 0.88);
+      --panel-border: rgba(0, 240, 255, 0.25);
+      --accent-cyan: #00f0ff;
+      --accent-blue: #0077ff;
+      --accent-green: #00ffaa;
+      --accent-alert: #ff3366;
+      --text-main: #e2f1ff;
+      --text-muted: #84a2c4;
+      --card-bg: rgba(7, 15, 29, 0.8);
+    }
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #030712;
-            color: #e2e8f0;
-            overflow-x: hidden;
-        }
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        /* Glowing effects & Marine Telemetry Styling */
-        .neon-border {
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25), inset 0 0 15px rgba(6, 182, 212, 0.15);
-            border: 1px solid rgba(6, 182, 212, 0.4);
-        }
-        .neon-glow-cyan {
-            text-shadow: 0 0 8px rgba(6, 182, 212, 0.7);
-        }
-        .neon-glow-blue {
-            text-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
-        }
-        .panel-bg {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-        }
-        
-        /* Custom animated sonar canvas background */
-        #sonarCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
 
-        /* Animated SVG Koreans & Aliens */
-        @keyframes stampFeet {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-4px) rotate(-3deg); }
-            50% { transform: translateY(0) rotate(0deg); }
-            75% { transform: translateY(-4px) rotate(3deg); }
-        }
-        .animate-stamp {
-            animation: stampFeet 0.4s infinite ease-in-out;
-        }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+      padding: 15px;
+      padding-top: max(15px, env(safe-area-inset-top, 0px));
+      padding-bottom: max(15px, env(safe-area-inset-bottom, 0px));
+    }
 
-        @keyframes beamUp {
-            0% { opacity: 0.3; transform: scaleX(0.9); }
-            50% { opacity: 0.8; transform: scaleX(1.1); }
-            100% { opacity: 0.3; transform: scaleX(0.9); }
-        }
-        .animate-beam {
-            animation: beamUp 1.5s infinite ease-in-out;
-        }
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-        @keyframes floatUfo {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        .animate-ufo {
-            animation: floatUfo 3s infinite ease-in-out;
-        }
+    .app-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 820px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #090d16;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #0891b2;
-            border-radius: 3px;
-        }
-    </style>
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(12px);
+      padding: 10px 18px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      color: var(--accent-cyan);
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-cyan);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    .audio-toggle {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--panel-border);
+      color: var(--accent-cyan);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s ease;
+    }
+
+    .audio-toggle:hover {
+      background: rgba(0, 240, 255, 0.25);
+    }
+
+    .fishing-graphic-panel {
+      background: linear-gradient(180deg, rgba(4, 12, 26, 0.95) 0%, rgba(10, 25, 48, 0.95) 100%);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      height: 110px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.15);
+    }
+
+    .water-line {
+      position: absolute;
+      bottom: 25px;
+      width: 100%;
+      height: 2px;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+      opacity: 0.6;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 650px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .status-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(10px);
+      padding: 12px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--accent-cyan);
+    }
+
+    .status-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .status-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin-top: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+      transition: width 0.4s ease;
+      box-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    .tension-bar {
+      height: 5px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin-top: 3px;
+      overflow: hidden;
+    }
+
+    .tension-fill {
+      height: 100%;
+      width: 20%;
+      background: var(--accent-green);
+      transition: all 0.4s ease;
+    }
+
+    .display-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 28px;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+      animation: fadeIn 0.3s ease-in-out forwards;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .screen-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #a2d2ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .screen-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .nav-buttons-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .btn-back {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .option-btn {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      padding: 14px 18px;
+      border-radius: 10px;
+      color: var(--text-main);
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .option-btn:hover {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: var(--accent-cyan);
+      transform: translateX(4px);
+    }
+
+    .action-btn {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: #040914;
+      font-weight: 700;
+      border: none;
+      padding: 14px 26px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+      align-self: flex-start;
+    }
+
+    .action-btn:hover {
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
+      transform: translateY(-2px);
+    }
+
+    .custom-textarea {
+      width: 100%;
+      height: 110px;
+      background: rgba(4, 9, 20, 0.8);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 10px;
+      padding: 14px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      resize: none;
+      outline: none;
+      user-select: text;
+    }
+
+    .graphic-box {
+      width: 100%;
+      height: 160px;
+      background: rgba(4, 10, 22, 0.9);
+      border: 1px dashed var(--panel-border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+      position: relative;
+    }
+
+    .impatient-man {
+      animation: feetStamp 0.4s infinite alternate ease-in-out;
+    }
+
+    @keyframes feetStamp {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-4px) rotate(-3deg); }
+    }
+
+    .ufo-beam {
+      animation: beamPulse 0.8s infinite alternate;
+    }
+
+    @keyframes beamPulse {
+      0% { opacity: 0.4; }
+      100% { opacity: 0.9; }
+    }
+
+    .quote-box {
+      background: rgba(0, 240, 255, 0.05);
+      border-left: 4px solid var(--accent-cyan);
+      padding: 14px;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: #d0e8ff;
+      margin-top: 6px;
+      font-size: 0.9rem;
+    }
+
+    .catch-badge {
+      display: inline-block;
+      background: rgba(0, 255, 170, 0.15);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      font-family: 'JetBrains Mono', monospace;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      width: fit-content;
+    }
+  .tv{position:relative;width:100%;max-width:380px;aspect-ratio:2/1;margin:0 auto 4px;border:6px solid #2b3445;border-radius:16px;box-shadow:0 0 0 2px #00f0ff55,0 0 24px #00f0ff44;overflow:hidden;background:#000}
+.tv svg{display:block;width:100%;height:100%}
+.tv-label{position:absolute;top:6px;left:10px;font:700 .65rem 'JetBrains Mono',monospace;color:#ff3366;z-index:2;animation:pulse 1s infinite}
+.scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px);pointer-events:none}
+.drop-man{animation:dropMan 3s ease-in infinite;transform-origin:150px 12px}
+@keyframes dropMan{0%{transform:translateY(18px) rotate(0)}60%{transform:translateY(88px) rotate(720deg)}66%{transform:translateY(80px) rotate(720deg)}72%,100%{transform:translateY(88px) rotate(720deg)}}
+.ufo-bob{animation:ufoBob 1.2s ease-in-out infinite alternate}
+@keyframes ufoBob{from{transform:translateY(-3px)}to{transform:translateY(3px)}}
+.bob{animation:boatBob 2.4s ease-in-out infinite alternate}
+@keyframes boatBob{from{transform:translateY(-2px)}to{transform:translateY(3px)}}
+.tear{stroke-dasharray:14 10;animation:tearFlow .5s linear infinite}
+@keyframes tearFlow{to{stroke-dashoffset:-24}}
+.wail{animation:wail .25s infinite alternate}
+@keyframes wail{from{transform:translateX(-1.5px)}to{transform:translateX(1.5px)}}
+#abd{position:fixed;inset:0;z-index:100;display:none;background:#02030a;overflow:hidden}
+#abd.on{display:block}
+#abd svg{position:absolute;inset:0;width:100%;height:100%}
+.abd-ui{position:absolute;left:0;right:0;z-index:2;text-align:center;padding:0 16px}
+.abd-top{top:max(18px,env(safe-area-inset-top,0px))}
+.abd-bot{bottom:max(22px,env(safe-area-inset-bottom,0px));display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.abd-title{font:800 clamp(1.4rem,5vw,3rem)/1.1 'Inter',sans-serif;color:#ff3366;text-shadow:0 0 18px #ff3366}
+.abd-sub{color:#e2f1ff;margin-top:8px;font-size:clamp(.95rem,2.5vw,1.3rem);text-shadow:0 2px 8px #000}
+.abd-flash{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 120px 20px rgba(255,51,102,.55);z-index:1}
+.lt{animation:alarm .5s steps(2) infinite}
+@keyframes alarm{50%{opacity:.3}}
+.abd-shake{animation:shake .15s infinite}
+@keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(2px,-2px)}50%{transform:translate(-2px,1px)}75%{transform:translate(1px,2px)}100%{transform:translate(0,0)}}
+.lift{animation:lift 4s ease-in infinite;transform-origin:400px 380px}
+@keyframes lift{0%{transform:translateY(0) rotate(0) scale(1)}15%{transform:translateY(-6px) rotate(-8deg) scale(1)}100%{transform:translateY(-230px) rotate(540deg) scale(.5)}}
+.wave{animation:waveMove 3s linear infinite}
+@keyframes waveMove{to{transform:translateX(-80px)}}
+#win{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;background:#ffe9a8;overflow:auto}
+#win.on{display:flex}
+.win-scene{position:relative;flex:0 0 55vh;min-height:280px}
+.win-scene svg{position:absolute;inset:0;width:100%;height:100%}
+.win-card{position:relative;z-index:2;width:calc(100% - 24px);max-width:680px;margin:-14px auto max(16px,env(safe-area-inset-bottom,0px));padding:22px;display:flex;flex-direction:column;gap:12px;background:rgba(6,14,24,.92);border:1px solid var(--panel-border);border-radius:16px}
+#winConf{position:fixed;inset:0;pointer-events:none;z-index:101;overflow:hidden}
+.cf{position:absolute;top:-20px;width:10px;height:16px;animation:cfall linear infinite}
+@keyframes cfall{to{transform:translateY(110vh) rotate(720deg)}}
+#ret{position:fixed;inset:0;z-index:100;display:none;background:#02030a;overflow:hidden}
+#ret.on{display:block}
+#ret svg{position:absolute;inset:0;width:100%;height:100%}
+.fall{animation:fallIn 3s ease-in infinite;transform-origin:400px 380px}
+@keyframes fallIn{0%{transform:translateY(-330px) rotate(0) scale(.6,.6)}65%{transform:translateY(0) rotate(720deg) scale(1,1)}70%{transform:translateY(6px) rotate(720deg) scale(1.15,.8)}80%,100%{transform:translateY(0) rotate(720deg) scale(1,1)}}
+.boatHit{animation:boatHit 3s infinite}
+@keyframes boatHit{0%,64%{transform:translateY(0)}70%{transform:translateY(10px)}80%,100%{transform:translateY(0)}}
+.splash{animation:splashA 3s infinite;opacity:0}
+@keyframes splashA{0%,64%{opacity:0;transform:translateY(0)}68%{opacity:1}90%,100%{opacity:0;transform:translateY(-35px)}}
+.rays{animation:spin 24s linear infinite;transform-origin:400px 230px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wiggle{animation:wig .5s ease-in-out infinite alternate;transform-origin:400px 200px}
+@keyframes wig{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+.drop{animation:dropFall 1s ease-in infinite}
+@keyframes dropFall{from{transform:translateY(0);opacity:1}to{transform:translateY(120px);opacity:0}}
+</style>
 </head>
-<body class="min-h-screen flex flex-col justify-between relative selection:bg-cyan-500 selection:text-black">
+<body>
 
-    <canvas id="sonarCanvas"></canvas>
+  <canvas id="bgCanvas"></canvas>
 
-    <!-- Main Outer Wrapper -->
-    <div class="relative z-10 flex flex-col min-h-screen">
+  <div id="abd">
+    <div class="abd-flash lt"></div>
+    <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02030a"/><stop offset="1" stop-color="#0b1b3d"/></linearGradient>
+        <linearGradient id="bigBeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00f0ff" stop-opacity=".85"/><stop offset="1" stop-color="#00f0ff" stop-opacity=".08"/></linearGradient>
+      </defs>
+      <g class="abd-shake">
+        <rect x="-30" y="-30" width="860" height="560" fill="url(#sky)"/>
+        <circle cx="680" cy="90" r="32" fill="#dfe9ff" opacity=".8"/>
+        <circle cx="90" cy="60" r="2.5" fill="#fff"/><circle cx="200" cy="120" r="2" fill="#fff"/><circle cx="560" cy="50" r="2.5" fill="#fff"/><circle cx="740" cy="200" r="2" fill="#fff"/><circle cx="40" cy="220" r="2" fill="#fff"/><circle cx="330" cy="40" r="2" fill="#fff"/>
+        <rect x="-30" y="382" width="860" height="130" fill="#07264d"/>
+        <path class="wave" d="M-80 382 q20 -14 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 V500 H-80Z" fill="#0b3a73"/>
+        <polygon class="lt" points="340,150 460,150 580,400 220,400" fill="url(#bigBeam)"/>
+        <g class="bob">
+          <path d="M330 385 L470 385 L445 420 L355 420Z" fill="#1b3b6f" stroke="#00f0ff" stroke-width="3"/>
+          <line x1="440" y1="382" x2="500" y2="330" stroke="#00f0ff" stroke-width="3"/>
+        </g>
+        <g class="lift">
+          <line x1="382" y1="368" x2="360" y2="335" stroke="#ffe0bd" stroke-width="6" stroke-linecap="round"/><line x1="418" y1="368" x2="440" y2="335" stroke="#ffe0bd" stroke-width="6" stroke-linecap="round"/>
+          <rect x="385" y="362" width="30" height="30" rx="6" fill="#0077ff"/>
+          <circle cx="400" cy="345" r="20" fill="#ffe0bd"/>
+          <path d="M380 343 Q380 322 400 322 Q420 322 420 343 Q410 333 400 335 Q390 333 380 343Z" fill="#332211"/>
+          <circle cx="392" cy="344" r="4" fill="#fff"/><circle cx="408" cy="344" r="4" fill="#fff"/><circle cx="392" cy="345" r="2" fill="#111"/><circle cx="408" cy="345" r="2" fill="#111"/>
+          <ellipse cx="400" cy="356" rx="5" ry="6" fill="#7a1f2b"/>
+          <text x="430" y="318" fill="#fff" font-size="22" font-weight="800" font-family="Inter,sans-serif">HELP!</text>
+        </g>
+        <g class="ufo-bob">
+          <ellipse cx="400" cy="140" rx="90" ry="14" fill="#5a6b80"/>
+          <ellipse cx="400" cy="98" rx="62" ry="40" fill="#00f0ff" opacity=".55"/>
+          <ellipse cx="400" cy="120" rx="150" ry="34" fill="#9fb4c8"/>
+          <circle class="lt" cx="290" cy="128" r="7" fill="#ffe066"/><circle cx="345" cy="138" r="7" fill="#ff3366"/><circle class="lt" cx="400" cy="142" r="7" fill="#ffe066"/><circle cx="455" cy="138" r="7" fill="#ff3366"/><circle class="lt" cx="510" cy="128" r="7" fill="#ffe066"/>
+        </g>
+      </g>
+    </svg>
+    <div class="abd-ui abd-top">
+      <div class="abd-title lt">⚠ ALIEN INTRUSION DETECTED ⚠</div>
+      <div class="abd-sub">Extraterrestrials are beaming Peter out of his boat into space!</div>
+    </div>
+    <div class="abd-ui abd-bot">
+      <button class="btn-back" onclick="prevStep()">← BACK</button>
+      <button class="action-btn" onclick="nextStep()">HELP!</button>
+      <button class="action-btn" style="background:linear-gradient(135deg,#ff3366,#ff7700)" onclick="nextStep()">LET'S GO!</button>
+    </div>
+  </div>
 
-        <header class="w-full border-b border-cyan-900/60 panel-bg sticky top-0 z-50 px-4 py-3 shadow-lg">
-            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-                
-                <!-- Brand Title & Audio Toggle -->
-                <div class="flex items-center justify-between w-full md:w-auto">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></div>
-                        <span class="font-mono text-xs tracking-widest text-cyan-400 uppercase font-bold">MAR-TELEMETRY v4.2</span>
-                        <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono">PETER_SYS</span>
-                    </div>
-                    
-                    <button id="audioToggle" onclick="toggleAudio()" class="md:hidden flex items-center gap-2 text-xs font-mono px-3 py-1.5 rounded-lg border border-cyan-700/50 bg-slate-900/80 text-cyan-400 hover:bg-cyan-950 transition">
-                        <i id="audioIcon" class="fas fa-volume-mute"></i>
-                        <span id="audioStatus">AUDIO OFF</span>
-                    </button>
-                </div>
+  <div id="ret">
+    <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+      <rect x="-30" y="-30" width="860" height="560" fill="url(#sky)"/>
+      <circle cx="680" cy="90" r="32" fill="#dfe9ff" opacity=".8"/>
+      <circle cx="90" cy="60" r="2.5" fill="#fff"/><circle cx="200" cy="140" r="2" fill="#fff"/><circle cx="560" cy="50" r="2.5" fill="#fff"/><circle cx="740" cy="220" r="2" fill="#fff"/><circle cx="40" cy="230" r="2" fill="#fff"/>
+      <rect x="-30" y="382" width="860" height="130" fill="#07264d"/>
+      <path class="wave" d="M-80 382 q20 -14 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 V500 H-80Z" fill="#0b3a73"/>
+      <g class="ufo-bob">
+        <ellipse cx="400" cy="110" rx="90" ry="14" fill="#5a6b80"/>
+        <ellipse cx="400" cy="68" rx="62" ry="40" fill="#00f0ff" opacity=".55"/>
+        <ellipse cx="400" cy="90" rx="150" ry="34" fill="#9fb4c8"/>
+        <circle class="lt" cx="290" cy="98" r="7" fill="#ffe066"/><circle cx="345" cy="108" r="7" fill="#ff3366"/><circle class="lt" cx="400" cy="112" r="7" fill="#ffe066"/><circle cx="455" cy="108" r="7" fill="#ff3366"/><circle class="lt" cx="510" cy="98" r="7" fill="#ffe066"/>
+        <text x="540" y="50" fill="#9fb4c8" font-size="20" font-weight="800" font-family="Inter,sans-serif">"TOO MANY QUESTIONS!"</text>
+      </g>
+      <g class="bob"><g class="boatHit">
+        <path d="M330 385 L470 385 L445 420 L355 420Z" fill="#1b3b6f" stroke="#00f0ff" stroke-width="3"/>
+        <line x1="440" y1="382" x2="500" y2="330" stroke="#00f0ff" stroke-width="3"/>
+      </g></g>
+      <g class="fall">
+        <line x1="382" y1="368" x2="360" y2="335" stroke="#ffe0bd" stroke-width="6" stroke-linecap="round"/><line x1="418" y1="368" x2="440" y2="335" stroke="#ffe0bd" stroke-width="6" stroke-linecap="round"/>
+        <rect x="385" y="362" width="30" height="30" rx="6" fill="#0077ff"/>
+        <circle cx="400" cy="345" r="20" fill="#ffe0bd"/>
+        <path d="M380 343 Q380 322 400 322 Q420 322 420 343 Q410 333 400 335 Q390 333 380 343Z" fill="#332211"/>
+        <circle cx="392" cy="344" r="4" fill="#fff"/><circle cx="408" cy="344" r="4" fill="#fff"/><circle cx="392" cy="345" r="2" fill="#111"/><circle cx="408" cy="345" r="2" fill="#111"/>
+        <ellipse cx="400" cy="356" rx="5" ry="6" fill="#7a1f2b"/>
+        <text x="430" y="318" fill="#fff" font-size="22" font-weight="800" font-family="Inter,sans-serif">AAAAH!</text>
+      </g>
+      <g class="splash"><circle cx="330" cy="392" r="6" fill="#6fd3ff"/><circle cx="365" cy="380" r="5" fill="#6fd3ff"/><circle cx="435" cy="380" r="5" fill="#6fd3ff"/><circle cx="470" cy="392" r="6" fill="#6fd3ff"/><text x="372" y="372" fill="#fff" font-size="26" font-weight="800" font-family="Inter,sans-serif">THUD!</text></g>
+    </svg>
+    <div class="abd-ui abd-top">
+      <div class="abd-title" style="color:#ffd166;text-shadow:0 0 18px #ffd166">REJECTED BY ALIENS! 🛸</div>
+      <div class="abd-sub">The aliens realized you are far too annoying and ask way too many questions. They dropped you right back into your boat.</div>
+    </div>
+    <div class="abd-ui abd-bot">
+      <button class="btn-back" onclick="prevStep()">← BACK</button>
+      <button class="action-btn" onclick="nextStep()">BACK TO FISHING →</button>
+    </div>
+  </div>
 
-                <!-- Telemetry Metrics Bar (Visible during active test) -->
-                <div id="telemetryBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto text-xs font-mono">
-                    
-                    <!-- 1. Quiz Stage -->
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 flex flex-col justify-between shadow-inner">
-                        <div class="text-slate-400 text-[10px] uppercase tracking-wider flex justify-between">
-                            <span>STAGE</span>
-                            <i class="fas fa-layer-group text-cyan-500/70"></i>
-                        </div>
-                        <div class="text-sm font-bold text-cyan-300 mt-1" id="metricStage">0 / 10</div>
-                    </div>
+  <div id="win">
+    <div id="winConf"></div>
+    <div class="win-scene">
+      <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+        <defs><linearGradient id="daySky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fc3f7"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs>
+        <rect x="-30" y="-30" width="860" height="560" fill="url(#daySky)"/>
+        <g class="rays" stroke="#fff6c8" stroke-width="16" opacity=".45"><line x1="400" y1="230" x2="400" y2="-500"/><line x1="400" y1="230" x2="400" y2="-500" transform="rotate(45 400 230)"/><line x1="400" y1="230" x2="400" y2="-500" transform="rotate(90 400 230)"/><line x1="400" y1="230" x2="400" y2="-500" transform="rotate(135 400 230)"/><line x1="400" y1="230" x2="400" y2="-500" transform="rotate(180 400 230)"/><line x1="400" y1="230" x2="400" y2="-500" transform="rotate(225 400 230)"/><line x1="400" y1="230" x2="400" y2="-500" transform="rotate(270 400 230)"/><line x1="400" y1="230" x2="400" y2="-500" transform="rotate(315 400 230)"/></g>
+        <circle cx="400" cy="230" r="95" fill="#fff3b0" opacity=".85"/>
+        <rect x="-30" y="380" width="860" height="130" fill="#1e88c9"/>
+        <path class="wave" d="M-80 380 q20 -14 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 V500 H-80Z" fill="#2aa3e0"/>
+        <g class="bob">
+          <path d="M280 380 L520 380 L480 440 L320 440Z" fill="#ffb347" stroke="#c0392b" stroke-width="4"/>
+          <rect x="300" y="395" width="200" height="8" fill="#c0392b"/>
+          <line x1="372" y1="312" x2="350" y2="236" stroke="#ffe0bd" stroke-width="11" stroke-linecap="round"/><line x1="428" y1="312" x2="450" y2="236" stroke="#ffe0bd" stroke-width="11" stroke-linecap="round"/>
+          <rect x="368" y="300" width="64" height="84" rx="12" fill="#0077ff"/>
+          <circle cx="400" cy="270" r="34" fill="#ffe0bd"/>
+          <path d="M366 268 Q366 232 400 232 Q434 232 434 268 Q420 248 400 252 Q380 248 366 268Z" fill="#332211"/>
+          <path d="M382 270 Q388 262 394 270" stroke="#222" stroke-width="3" fill="none"/><path d="M406 270 Q412 262 418 270" stroke="#222" stroke-width="3" fill="none"/>
+          <path d="M386 282 Q400 302 414 282Z" fill="#7a1f2b"/>
+          <ellipse cx="376" cy="282" rx="7" ry="4" fill="#ff8fa3" opacity=".7"/><ellipse cx="424" cy="282" rx="7" ry="4" fill="#ff8fa3" opacity=".7"/>
+          <g class="wiggle">
+            <polygon points="462,200 520,160 508,200 520,240" fill="#ffd166" opacity=".9"/>
+            <ellipse id="winFishBody" cx="400" cy="200" rx="70" ry="32" fill="#ff7a8a"/>
+            <path d="M340 200 Q400 232 460 200 Q400 245 340 200Z" fill="#fff" opacity=".35"/>
+            <path d="M380 172 Q400 150 425 172Z" fill="#ffd166"/>
+            <circle cx="352" cy="192" r="8" fill="#fff"/><circle cx="350" cy="192" r="4" fill="#111"/>
+            <path d="M336 206 Q344 212 352 207" stroke="#7a1f2b" stroke-width="3" fill="none"/>
+          </g>
+        </g>
+        <circle class="drop" cx="360" cy="236" r="5" fill="#6fd3ff"/><circle class="drop" style="animation-delay:-.4s" cx="400" cy="240" r="5" fill="#6fd3ff"/><circle class="drop" style="animation-delay:-.7s" cx="440" cy="236" r="5" fill="#6fd3ff"/>
+        <text class="lt" x="270" y="150" font-size="38">✨</text><text class="lt" x="520" y="120" font-size="38">✨</text><text class="lt" x="590" y="250" font-size="30">✨</text><text class="lt" x="190" y="260" font-size="30">✨</text>
+      </svg>
+    </div>
+    <div class="win-card">
+      <span class="catch-badge">CATCH SUCCESSFUL! 🏆</span>
+      <h2 class="screen-title" id="winTitle">Fish</h2>
+      <p class="screen-subtitle" id="winDesc">Description</p>
+      <div class="quote-box" id="winQuote">"Your message"</div>
+      <button class="action-btn" onclick="restartQuiz()">RESTART TEST 🔄</button>
+    </div>
+  </div>
 
-                    <!-- 2. Line Reeled -->
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 flex flex-col justify-between shadow-inner">
-                        <div class="text-slate-400 text-[10px] uppercase tracking-wider flex justify-between">
-                            <span>LINE REELED</span>
-                            <i class="fas fa-dharmachakra text-cyan-500/70"></i>
-                        </div>
-                        <div class="flex items-center gap-2 mt-1">
-                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
-                                <div id="metricLineBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-0 transition-all duration-500"></div>
-                            </div>
-                            <span id="metricLineText" class="text-xs text-cyan-300 font-bold">0%</span>
-                        </div>
-                    </div>
-
-                    <!-- 3. Current Depth -->
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 flex flex-col justify-between shadow-inner">
-                        <div class="text-slate-400 text-[10px] uppercase tracking-wider flex justify-between">
-                            <span>DEPTH</span>
-                            <i class="fas fa-arrows-up-down text-cyan-500/70"></i>
-                        </div>
-                        <div class="text-sm font-bold text-blue-400 mt-1" id="metricDepth">500 m</div>
-                    </div>
-
-                    <!-- 4. Tension Load -->
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 flex flex-col justify-between shadow-inner">
-                        <div class="text-slate-400 text-[10px] uppercase tracking-wider flex justify-between">
-                            <span>LOAD TENSION</span>
-                            <i class="fas fa-gauge-high text-cyan-500/70"></i>
-                        </div>
-                        <div class="flex items-center gap-1.5 mt-1">
-                            <span id="metricTensionText" class="text-xs font-bold text-emerald-400">IDLE (0kg)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Desktop Sound Toggle -->
-                <button onclick="toggleAudio()" class="hidden md:flex items-center gap-2 text-xs font-mono px-3 py-2 rounded-lg border border-cyan-700/50 bg-slate-900/80 text-cyan-400 hover:bg-cyan-950 transition">
-                    <i id="audioIconDesktop" class="fas fa-volume-mute"></i>
-                    <span id="audioStatusDesktop">AUDIO OFF</span>
-                </button>
-            </div>
-        </header>
-
-        <main class="flex-grow flex items-center justify-center p-4 sm:p-6 max-w-4xl mx-auto w-full my-4">
-            
-            <div id="appContainer" class="w-full panel-bg rounded-2xl neon-border p-6 sm:p-10 shadow-2xl relative overflow-hidden transition-all duration-300">
-                <!-- Content will be injected here via JS -->
-            </div>
-
-        </main>
-
-        <footer class="w-full border-t border-slate-800/80 panel-bg py-3 px-4 text-center text-xs font-mono text-slate-500">
-            <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-                <div>SYSTEM STATUS: <span class="text-emerald-400 font-bold">ONLINE</span> | SONAR DEPTH: 1000M MAX</div>
-                <div>HAPPY BIRTHDAY PETER &copy; 2026 DEEP SEA RESEARCH LAB</div>
-            </div>
-        </footer>
+  <div class="app-container">
+    <div class="header-bar">
+      <div class="brand">
+        <div class="brand-dot"></div>
+        <span>HAURAKI-GULF TELEMETRY</span>
+      </div>
+      <button class="audio-toggle" id="audioBtn" onclick="toggleAudio()">🔊 AUDIO: ON</button>
     </div>
 
-    <script>
-        let audioCtx = null;
-        let soundEnabled = false;
+    <div class="fishing-graphic-panel">
+      <div class="water-line"></div>
+      <svg width="100%" height="100%" viewBox="0 0 780 110" preserveAspectRatio="xMidYMid meet" id="boatSvg">
+        <g id="rig" style="transform:translateX(-320px);transition:transform 1.2s ease-in-out"><g class="bob"><g id="boatGroup" transform="translate(380, 45)">
+          <path d="M -35 15 L 35 15 L 25 32 L -25 32 Z" fill="#1b3b6f" stroke="#00f0ff" stroke-width="1.5"/>
+          <circle cx="0" cy="-2" r="10" fill="#ffe0bd"/>
+          <path d="M -8 -8 Q 0 -14 8 -8" fill="#332211"/>
+          <rect x="-6" y="8" width="12" height="15" rx="3" fill="#0077ff"/>
+          <line x1="4" y1="10" x2="35" y2="-15" stroke="#00f0ff" stroke-width="2"/>
+        </g>
+        <path id="fishingLine" d="M 415 60 Q 420 85 415 95" stroke="#00f0ff" stroke-width="1" fill="none" stroke-dasharray="3,3"/>
+        <g id="fishIcon" transform="translate(415, 95)">
+          <ellipse cx="0" cy="0" rx="14" ry="7" fill="#00ffaa" opacity="0.85"/>
+          <polygon points="12,-5 20,-9 18,0 20,9 12,5" fill="#00ffaa" opacity="0.85"/>
+          <circle cx="-6" cy="-2" r="1.5" fill="#006644"/></g></g></g><g>
+        </g>
+      </svg>
+    </div>
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+    <div class="dashboard-grid">
+      <div class="status-card">
+        <span class="status-label">Quiz Stage</span>
+        <span class="status-value" id="valStage">0 / 10</span>
+      </div>
+      
+      <div class="status-card">
+        <span class="status-label">Line Reeled</span>
+        <span class="status-value" id="valReeled">0%</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="barReeled"></div>
+        </div>
+      </div>
+
+      <div class="status-card">
+        <span class="status-label">Current Depth</span>
+        <span class="status-value" id="valDepth">500 m</span>
+      </div>
+
+      <div class="status-card">
+        <span class="status-label">Tension Load</span>
+        <span class="status-value" id="valTension">LOW</span>
+        <div class="tension-bar">
+          <div class="tension-fill" id="barTension"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="display-panel" id="displayPanel">
+      
+      <div class="screen active" id="screenIntro">
+        <span class="catch-badge">SYSTEM READY</span>
+        <h1 class="screen-title">Happy birthday, Peter! 🎣</h1>
+        <p class="screen-subtitle">Cast your line into the Waiheke waters and take the test to reel in your custom New Zealand fish personality.</p>
+        <button class="action-btn" onclick="startQuiz()">LET'S TAKE A TEST</button>
+      </div>
+
+      <div class="screen" id="screenQuestion">
+        <span class="catch-badge" id="qCategory">QUESTION</span>
+        <h2 class="screen-title" id="qTitle">Title</h2>
+        <p class="screen-subtitle" id="qPrompt">Prompt</p>
+        <div class="options-grid" id="qOptions"></div>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenTrans1">
+        <div class="graphic-box">
+          <svg width="100" height="100" viewBox="0 0 100 100" class="impatient-man">
+            <circle cx="50" cy="35" r="18" fill="#ffe0bd" />
+            <path d="M 38 32 Q 42 28 46 32" stroke="#222" stroke-width="2.5" fill="none"/>
+            <path d="M 54 32 Q 58 28 62 32" stroke="#222" stroke-width="2.5" fill="none"/>
+            <circle cx="44" cy="36" r="2" fill="#111"/>
+            <circle cx="56" cy="36" r="2" fill="#111"/>
+            <path d="M 44 46 Q 50 40 56 46" stroke="#c33" stroke-width="2" fill="none"/>
+            <rect x="42" y="53" width="16" height="26" rx="4" fill="#ff4444"/>
+          </svg>
+        </div>
+        <h2 class="screen-title">Patience is a Virtue...</h2>
+        <p class="screen-subtitle">Today is a beautiful day and you decide to go fishing on a secluded island. However, it’s been hours and you still have not caught anything. You are getting impatient..</p>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">CONTINUE →</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenTrans2">
+        <h2 class="screen-title">Hypothetical Protocol</h2>
+        <p class="screen-subtitle">"Here are some hypothetical scenarios, to keep you entertained while you wait for a fish to bite."</p>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">OK →</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenAbduction">
+        <div class="graphic-box">
+          <svg width="180" height="130" viewBox="0 0 200 130">
+            <ellipse cx="100" cy="25" rx="45" ry="12" fill="#00f0ff" opacity="0.8"/>
+            <polygon points="70,25 130,25 150,110 50,110" fill="url(#ufoBeam)" class="ufo-beam"/>
+            <rect x="90" y="80" width="20" height="25" fill="#ff4444" rx="3"/>
+            <circle cx="100" cy="72" r="8" fill="#ffe0bd"/>
+            <defs>
+              <linearGradient id="ufoBeam" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#00f0ff" stop-opacity="0.1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h2 class="screen-title">ALIEN INTRUSION DETECTED!</h2>
+        <p class="screen-subtitle">Extraterrestrials are beaming Peter out of his boat into space!</p>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">HELP!</button>
+          <button class="action-btn" style="background: linear-gradient(135deg, #ff3366, #ff7700)" onclick="nextStep()">LET'S GO!</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenReturn">
+        <div class="tv"><div class="tv-label">● REPLAY · ALIEN CAM 03</div><svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice"><rect width="300" height="150" fill="#0a1a38"/><circle cx="40" cy="25" r="2.5" fill="#fff"/><circle cx="250" cy="35" r="2" fill="#fff"/><circle cx="270" cy="15" r="1.5" fill="#fff"/><rect y="112" width="300" height="40" fill="#0b4a8a"/><g class="ufo-bob"><polygon points="130,30 170,30 190,110 110,110" fill="#00f0ff" opacity=".18"/><ellipse cx="150" cy="24" rx="44" ry="11" fill="#9fb4c8"/><ellipse cx="150" cy="16" rx="20" ry="10" fill="#00f0ff" opacity=".7"/></g><path d="M108 112 L192 112 L180 130 L120 130 Z" fill="#1b3b6f" stroke="#00f0ff" stroke-width="1.5"/><g class="drop-man"><line x1="143" y1="12" x2="132" y2="0" stroke="#ffe0bd" stroke-width="3"/><line x1="157" y1="12" x2="168" y2="0" stroke="#ffe0bd" stroke-width="3"/><circle cx="150" cy="0" r="9" fill="#ffe0bd"/><ellipse cx="150" cy="2" rx="3" ry="4" fill="#7a1f2b"/><rect x="143" y="8" width="14" height="16" rx="3" fill="#ff4444"/></g></svg><div class="scan"></div></div>
+        <h2 class="screen-title">REJECTED BY ALIENS! 🛸</h2>
+        <p class="screen-subtitle">Oh no! The aliens realized you are far too annoying and ask way too many questions. They dropped you right back into your boat.</p>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">BACK TO FISHING →</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenTrans4">
+        <div class="graphic-box" style="height:210px">
+          <svg width="400" height="190" viewBox="0 0 400 190"><rect x="92" y="160" width="56" height="30" rx="8" fill="#0077ff"/><circle cx="120" cy="118" r="44" fill="#ffe0bd"/><path d="M76 112 Q74 70 120 68 Q166 70 164 112 Q152 88 120 92 Q90 88 76 112Z" fill="#332211"/><ellipse cx="102" cy="114" rx="12" ry="9" fill="#7b4fa3" opacity=".75"/><ellipse cx="102" cy="114" rx="9" ry="7" fill="#fff"/><ellipse cx="140" cy="114" rx="9" ry="7" fill="#fff"/><circle cx="105" cy="115" r="3.5" fill="#111"/><circle cx="143" cy="115" r="3.5" fill="#111"/><path d="M91 108 L113 108" stroke="#332211" stroke-width="4"/><path d="M131 108 L153 108" stroke="#332211" stroke-width="4"/><path d="M88 98 L112 104" stroke="#14141c" stroke-width="3.5"/><path d="M152 98 L128 104" stroke="#14141c" stroke-width="3.5"/><ellipse cx="152" cy="134" rx="9" ry="6" fill="#8a5fb0" opacity=".7"/><path d="M108 142 Q120 136 134 143" stroke="#7a1f2b" stroke-width="3.5" fill="none"/><g transform="rotate(-20 135 82)"><rect x="118" y="76" width="34" height="12" rx="3" fill="#f4c58a" stroke="#c99a5e"/><line x1="135" y1="76" x2="135" y2="88" stroke="#c99a5e"/></g><path d="M160 124 l12 4 M160 130 l12 6 M158 136 l11 8" stroke="#c0392b" stroke-width="2"/><circle cx="190" cy="98" r="8" fill="#fff"/><circle cx="204" cy="88" r="5" fill="#fff"/><ellipse cx="290" cy="58" rx="108" ry="46" fill="#fff"/><text x="290" y="44" text-anchor="middle" font-size="13" font-weight="700" fill="#222" font-family="Inter,sans-serif">Okay.. let's pretend</text><text x="290" y="62" text-anchor="middle" font-size="13" font-weight="700" fill="#222" font-family="Inter,sans-serif">that never happened..</text><text x="290" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#222" font-family="Inter,sans-serif">back to fishing</text></svg>
+        </div>
+        <h2 class="screen-title">Back in the Boat ⚓</h2>
+        
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">OK →</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenCry">
+        <div class="graphic-box" style="height:215px">
+          <svg width="240" height="210" viewBox="0 0 240 210"><ellipse cx="120" cy="204" rx="110" ry="8" fill="#6fd3ff" opacity=".5"/><g class="wail"><circle cx="68" cy="90" r="8" fill="#ffe0bd"/><circle cx="172" cy="90" r="8" fill="#ffe0bd"/><ellipse cx="120" cy="85" rx="52" ry="56" fill="#ffe0bd" stroke="#e8c39a"/><path d="M64 78 Q58 14 120 12 Q182 14 176 78 Q168 52 150 56 L138 38 L124 56 L108 36 L96 56 Q74 52 64 78Z" fill="#14141c"/><path d="M120 14 Q114 2 128 4" stroke="#14141c" stroke-width="4" fill="none"/><ellipse cx="98" cy="92" rx="14" ry="17" fill="#fff"/><ellipse cx="142" cy="92" rx="14" ry="17" fill="#fff"/><ellipse cx="98" cy="96" rx="9" ry="12" fill="#2a1d16"/><ellipse cx="142" cy="96" rx="9" ry="12" fill="#2a1d16"/><circle cx="95" cy="89" r="4" fill="#fff"/><circle cx="139" cy="89" r="4" fill="#fff"/><circle cx="101" cy="100" r="2" fill="#fff"/><circle cx="145" cy="100" r="2" fill="#fff"/><ellipse cx="98" cy="105" rx="13" ry="5" fill="#6fd3ff" opacity=".7"/><ellipse cx="142" cy="105" rx="13" ry="5" fill="#6fd3ff" opacity=".7"/><path d="M84 74 L110 66" stroke="#14141c" stroke-width="3.5"/><path d="M156 74 L130 66" stroke="#14141c" stroke-width="3.5"/><ellipse cx="80" cy="114" rx="9" ry="5" fill="#ff8fa3" opacity=".6"/><ellipse cx="160" cy="114" rx="9" ry="5" fill="#ff8fa3" opacity=".6"/><path d="M100 120 Q120 156 140 120 Q120 126 100 120Z" fill="#7a1f2b"/><path d="M110 138 Q120 146 130 138 Q120 132 110 138Z" fill="#ff7f93"/></g><path d="M92 108 Q74 150 76 210" stroke="#6fd3ff" stroke-width="12" fill="none" opacity=".5"/><path class="tear" d="M92 108 Q74 150 76 210" stroke="#d8f4ff" stroke-width="7" fill="none"/><path d="M148 108 Q166 150 164 210" stroke="#6fd3ff" stroke-width="12" fill="none" opacity=".5"/><path class="tear" d="M148 108 Q166 150 164 210" stroke="#d8f4ff" stroke-width="7" fill="none"/></svg>
+        </div>
+        <h2 class="screen-title">Peter has feelings now 😭</h2>
+        <p class="screen-subtitle">Rejected by aliens. Ignored by fish. Still, it's his birthday.</p>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">CONTINUE →</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenTrans5">
+        <h2 class="screen-title">Back to the Questions</h2>
+        <p class="screen-subtitle">"Let's continue answering some questions."</p>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">OK →</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenTrans3">
+        <h2 class="screen-title">Final Phase Incoming</h2>
+        <p class="screen-subtitle">"Now let's see how you'd react in these situations."</p>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">OK →</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenQ10">
+        <span class="catch-badge">FINAL QUESTION</span>
+        <h2 class="screen-title">Question 10 — Message Through Time</h2>
+        <p class="screen-subtitle">"Okay, last one, and this one's real. If you could send a message to your younger self from 10 years ago, what would you say?"</p>
+        <textarea class="custom-textarea" id="q10Text" placeholder="Type your message here..."></textarea>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="submitQ10()">REEL IN FINAL CATCH 🎣</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screenResults">
+        <span class="catch-badge">CATCH SUCCESSFUL! 🏆</span>
+        <h2 class="screen-title" id="resFishTitle">Fish Personality Type</h2>
+        <p class="screen-subtitle" id="resFishDesc">Fish Description</p>
+        
+        <div class="quote-box" id="resQuote">
+          "Your message"
+        </div>
+
+        <button class="action-btn" style="margin-top: 10px;" onclick="restartQuiz()">RESTART TEST 🔄</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let audioEnabled = true;
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    function playTone(freq = 600, duration = 0.08) {
+      if (!audioEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      if (audioEnabled) startAmbience(); else stopAmbience();
+      document.getElementById('audioBtn').innerText = audioEnabled ? '🔊 AUDIO: ON' : 'MUTE: OFF';
+    }
+
+    function sirenSfx() {
+      if (!audioEnabled) return;
+      try {
+        initAudio();
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+        o.type = 'square';
+        for (let i = 0; i < 6; i++) o.frequency.setValueAtTime(i % 2 ? 620 : 880, t + i * 0.3);
+        g.gain.setValueAtTime(0.03, t);
+        g.gain.linearRampToValueAtTime(0, t + 1.8);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(t); o.stop(t + 1.8);
+      } catch (e) {}
+    }
+    function confetti() {
+      const box = document.getElementById('winConf');
+      if (box.children.length) return;
+      const cols = ['#ff3366', '#ffd166', '#00f0ff', '#00ffaa', '#ff9ad5', '#ffffff'];
+      for (let i = 0; i < 50; i++) {
+        const s = document.createElement('span');
+        s.className = 'cf';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.background = cols[i % cols.length];
+        s.style.animationDuration = (3 + Math.random() * 3) + 's';
+        s.style.animationDelay = (-Math.random() * 5) + 's';
+        box.appendChild(s);
+      }
+    }
+    let ambience = null;
+    function startAmbience() {
+      if (!audioEnabled || ambience) return;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const c = audioCtx, now = c.currentTime;
+        const master = c.createGain();
+        master.gain.setValueAtTime(0, now);
+        master.gain.linearRampToValueAtTime(0.9, now + 2);
+        master.connect(c.destination);
+        const buf = c.createBuffer(1, c.sampleRate * 4, c.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        const src = c.createBufferSource();
+        src.buffer = buf; src.loop = true;
+        const lp = c.createBiquadFilter();
+        lp.type = 'lowpass'; lp.frequency.value = 700;
+        const waveGain = c.createGain();
+        waveGain.gain.value = 0.12;
+        const lfo = c.createOscillator();
+        lfo.frequency.value = 0.12;
+        const lfoA = c.createGain(); lfoA.gain.value = 0.1;
+        const lfoF = c.createGain(); lfoF.gain.value = 400;
+        lfo.connect(lfoA); lfoA.connect(waveGain.gain);
+        lfo.connect(lfoF); lfoF.connect(lp.frequency);
+        src.connect(lp); lp.connect(waveGain); waveGain.connect(master);
+        src.start(); lfo.start();
+        const timer = setInterval(() => { if (audioEnabled && Math.random() < 0.7) gull(); }, 3500);
+        ambience = { master, src, lfo, timer };
+        setTimeout(gull, 800);
+      } catch (e) {}
+    }
+    function gull() {
+      if (!ambience) return;
+      const c = audioCtx, t = c.currentTime;
+      const n = 2 + Math.floor(Math.random() * 2);
+      for (let i = 0; i < n; i++) {
+        const o = c.createOscillator(); o.type = 'sawtooth';
+        const g = c.createGain();
+        const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = 3;
+        const s = t + i * 0.28;
+        o.frequency.setValueAtTime(1500, s);
+        o.frequency.exponentialRampToValueAtTime(2600, s + 0.1);
+        o.frequency.exponentialRampToValueAtTime(1700, s + 0.24);
+        g.gain.setValueAtTime(0.0001, s);
+        g.gain.linearRampToValueAtTime(0.05, s + 0.04);
+        g.gain.exponentialRampToValueAtTime(0.001, s + 0.25);
+        o.connect(f); f.connect(g); g.connect(ambience.master);
+        o.start(s); o.stop(s + 0.3);
+      }
+    }
+    function stopAmbience() {
+      if (!ambience) return;
+      const a = ambience; ambience = null;
+      clearInterval(a.timer);
+      a.master.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+      setTimeout(() => { try { a.src.stop(); a.lfo.stop(); } catch (e) {} }, 700);
+    }
+
+    const questions = [
+      {
+        id: 'Q1',
+        title: 'Q1 — Mood',
+        prompt: '"First, let\'s see how you\'re feeling today."',
+        options: [
+          { text: 'I feel pretty good', scores: { Snapper: 2, Kahawai: 1 } },
+          { text: 'I feel pretty bad', scores: { Kingfish: 2, Trout: 1 } },
+          { text: 'I feel pretty ✨', scores: { Trout: 2, Kahawai: 1 } }
+        ]
+      },
+      {
+        id: 'Q2',
+        title: 'Q2 — The fairy',
+        prompt: '"A tiny fairy lives on top of your head. Nobody can see it, and most of the time it doesn\'t bother you. Sometimes it\'s even helpful. But once a month, it cuts off a random piece of your hair while you sleep. You can evict it, but you don\'t know what powers it might use against you in revenge. What do you do?"',
+        options: [
+          { text: 'Evict it and live in fear', scores: { Kingfish: 2, Trout: 1 } },
+          { text: 'Let it stay and become friends', scores: { Snapper: 2, Kahawai: 1 } },
+          { text: 'Shave your head', scores: { Kahawai: 2, Kingfish: 1 } }
+        ]
+      },
+      {
+        id: 'Q3',
+        title: 'Q3 — Last one standing',
+        prompt: '"If you were the last living being on Earth, what would you do?"',
+        options: [
+          { text: 'Use the opportunity and build a new civilization from scratch', scores: { Kingfish: 2, Kahawai: 1 } },
+          { text: 'Nothing. You\'d disappear too, because there\'s no one left to see you exist', scores: { Trout: 2, Snapper: 1 } },
+          { text: 'Wander around and try to make friends with the bugs', scores: { Snapper: 2, Kahawai: 1 } }
+        ]
+      },
+      {
+        id: 'Q4',
+        title: 'Q4 — Snack choice',
+        prompt: '"It\'s a beautiful sunny day, and you\'re dehydrated. What snack are you bringing?"',
+        options: [
+          { text: 'Microwave popcorn, but there\'s no microwave, so you eat the raw kernels', scores: { Kahawai: 2, Kingfish: 1 } },
+          { text: 'The grass looks green and yummy, so you just bite into it', scores: { Snapper: 2, Trout: 1 } },
+          { text: 'A whole cow, disguised as a bag of chips', scores: { Kingfish: 2, Kahawai: 1 } }
+        ]
+      },
+      {
+        id: 'Q5',
+        title: 'Q5 — Alien abduction',
+        prompt: '"The aliens have, for whatever reason, decided to abduct you. You feel pretty indifferent about it. What do you bring from Earth?"',
+        options: [
+          { text: 'Your Vyvanse, so you can be productive in space', scores: { Kahawai: 2, Trout: 1 } },
+          { text: 'Kimchi', scores: { Snapper: 2, Kingfish: 1 } },
+          { text: 'A pen and paper, to record your experiences', scores: { Trout: 2, Snapper: 1 } }
+        ]
+      },
+      {
+        id: 'Q6',
+        title: 'Q6 — The cult',
+        prompt: '"You went somewhere because they promised free food. Turns out it\'s a cult. Thankfully, they don\'t do anything bad or weird. The only rule is that you have to tell everyone in your life you\'re in a weird cult. Do you join?"',
+        options: [
+          { text: 'Join', scores: { Snapper: 2, Kahawai: 1 } }
+        ]
+      },
+      {
+        id: 'Q7',
+        title: 'Q7 — The horse',
+        prompt: '"You\'re offered $50,000, but for the rest of your life, every time you enter a bedroom there\'s a 10% chance a horse is already in there. You can\'t remove the horse. Do you accept?"',
+        options: [
+          { text: 'Yes', scores: { Kahawai: 2, Kingfish: 1 } },
+          { text: 'No', scores: { Trout: 2, Snapper: 1 } }
+        ]
+      },
+      {
+        id: 'Q8',
+        title: 'Q8 — The house',
+        prompt: '"You\'re given the house of your dreams for free. But one room is occupied by someone you never see. They never cause any trouble, but sometimes you hear them crying at night. Do you accept?"',
+        options: [
+          { text: 'Yes', scores: { Snapper: 2, Kahawai: 1 } },
+          { text: 'No', scores: { Trout: 2, Kingfish: 1 } }
+        ]
+      },
+      {
+        id: 'Q9',
+        title: 'Q9 — The goose',
+        prompt: '"A goose the size of a golden retriever moves in next door. It isn\'t aggressive, but every morning it stands at your window and stares at you. What do you do?"',
+        options: [
+          { text: 'Leave a tiny welcome basket on its doorstep', scores: { Snapper: 2, Trout: 1 } },
+          { text: 'Stare back until one of you blinks', scores: { Kingfish: 2, Kahawai: 1 } },
+          { text: 'Start a podcast together, because clearly it has a lot to say', scores: { Kahawai: 2, Snapper: 1 } }
+        ]
+      }
+    ];
+
+    const resultsData = {
+      Snapper: {
+        title: '🐠 Snapper',
+        desc: '"You are the easygoing mate who shows up to every barbecue. Friendly, a little greedy, and happy to investigate anything that smells like food. You\'re the fish that makes beginners feel like experts, and you have no idea how popular you are. Happy birthday to someone everyone\'s glad to have around."'
+      },
+      Kahawai: {
+        title: '🐟 Kahawai',
+        desc: '"You are the hyperactive show-off. You hit the lure at full speed, throw in a few acrobatic leaps, and fight like you have a bus to catch. Loud, flashy and tireless, you\'re always a bit too much and secretly the life of the party. You\'re also quietly insulted that people overlook you. Happy birthday, you absolute menace."'
+      },
+      Trout: {
+        title: '🌈 Rainbow Trout',
+        desc: '"You are the glamorous perfectionist. Dressed to impress with that pink stripe, you\'re picky about your water, your food and your company. You\'re sharp-eyed and easily spooked, and you will ignore someone\'s best cast just to prove a point. When you finally take the fly, you leap about like it was all your idea. Happy birthday to someone who makes everyone work for it."'
+      },
+      Kingfish: {
+        title: '🦈 Kingfish',
+        desc: '"You are the neighbourhood bully with a gym membership. Powerful, territorial and absolutely unwilling to lose a fight, you make a beeline for the nearest reef or pylon the moment you\'re hooked. You\'re all muscle and attitude, and you respect only anglers who can hold on. Happy birthday to the one most likely to win."'
+      }
+    };
+
+    const sequence = [
+      { type: 'intro' },
+      { type: 'q', index: 0 },
+      { type: 'trans1' },
+      { type: 'trans2' },
+      { type: 'q', index: 1 },
+      { type: 'q', index: 2 },
+      { type: 'q', index: 3 },
+      { type: 'q', index: 4 },
+      { type: 'abduction' },
+      { type: 'return' },
+      { type: 'trans4' },
+      { type: 'cry' },
+      { type: 'trans5' },
+      { type: 'q', index: 5 },
+      { type: 'trans3' },
+      { type: 'q', index: 6 },
+      { type: 'q', index: 7 },
+      { type: 'q', index: 8 },
+      { type: 'q10' },
+      { type: 'results' }
+    ];
+
+    let stepIndex = 0;
+    let userAnswers = {};
+    let userQ10Text = "";
+
+    function startQuiz() {
+      startAmbience();
+      playTone(800, 0.1);
+      stepIndex = 1;
+      renderStep();
+    }
+
+    function nextStep() {
+      playTone(700, 0.08);
+      if (stepIndex < sequence.length - 1) {
+        stepIndex++;
+        renderStep();
+      }
+    }
+
+    function prevStep() {
+      playTone(500, 0.08);
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderStep();
+      }
+    }
+
+    function selectOption(qIdx, optIdx) {
+      playTone(900, 0.08);
+      userAnswers[qIdx] = optIdx;
+      nextStep();
+    }
+
+    function submitQ10() {
+      const val = document.getElementById('q10Text').value.trim();
+      userQ10Text = val ? val : "No message sent!";
+      playTone(1000, 0.15);
+      nextStep();
+    }
+
+    function restartQuiz() {
+      playTone(600, 0.1);
+      stepIndex = 0;
+      userAnswers = {};
+      userQ10Text = "";
+      renderStep();
+    }
+
+    function updateTelemetryAndGraphic() {
+      let completedQuestions = 0;
+      for (let i = 0; i < 9; i++) {
+        if (userAnswers[i] !== undefined) completedQuestions++;
+      }
+      const currentSeq = sequence[stepIndex];
+      if (currentSeq.type === 'results') completedQuestions = 10;
+
+      const percent = Math.round((completedQuestions / 10) * 100);
+      const depth = 500 - (completedQuestions * 50);
+      document.getElementById('rig').style.transform = `translateX(${-320 + completedQuestions * 64}px)`;
+
+      document.getElementById('valStage').innerText = `${Math.min(completedQuestions, 10)} / 10`;
+      document.getElementById('valReeled').innerText = `${percent}%`;
+      document.getElementById('barReeled').style.width = `${percent}%`;
+      document.getElementById('valDepth').innerText = `${depth} m`;
+
+      const fishY = 95 - (completedQuestions * 3);
+      document.getElementById('fishIcon').setAttribute('transform', `translate(415, ${fishY})`);
+      document.getElementById('fishingLine').setAttribute('d', `M 415 60 Q 420 ${60 + (fishY-60)/2} 415 ${fishY}`);
+
+      const tensionFill = document.getElementById('barTension');
+      const tensionVal = document.getElementById('valTension');
+      if (completedQuestions === 0) {
+        tensionVal.innerText = 'LOW';
+        tensionVal.style.color = '#00ffaa';
+        tensionFill.style.width = '20%';
+        tensionFill.style.background = 'var(--accent-green)';
+      } else if (completedQuestions < 6) {
+        tensionVal.innerText = 'MEDIUM';
+        tensionVal.style.color = '#00f0ff';
+        tensionFill.style.width = '50%';
+        tensionFill.style.background = 'var(--accent-cyan)';
+      } else if (completedQuestions < 10) {
+        tensionVal.innerText = 'HIGH';
+        tensionVal.style.color = '#ffaa00';
+        tensionFill.style.width = '80%';
+        tensionFill.style.background = '#ffaa00';
+      } else {
+        tensionVal.innerText = 'MAX HOOKED';
+        tensionVal.style.color = '#ff3366';
+        tensionFill.style.width = '100%';
+        tensionFill.style.background = '#ff3366';
+      }
+    }
+
+    function renderStep() {
+      updateTelemetryAndGraphic();
+
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('abd').classList.remove('on');
+      document.getElementById('win').classList.remove('on');
+      document.getElementById('ret').classList.remove('on');
+      const step = sequence[stepIndex];
+
+      if (step.type === 'intro') {
+        document.getElementById('screenIntro').classList.add('active');
+      } else if (step.type === 'trans1') {
+        document.getElementById('screenTrans1').classList.add('active');
+      } else if (step.type === 'trans2') {
+        document.getElementById('screenTrans2').classList.add('active');
+      } else if (step.type === 'abduction') {
+        document.getElementById('abd').classList.add('on');
+        sirenSfx();
+      } else if (step.type === 'return') {
+        document.getElementById('ret').classList.add('on');
+      } else if (step.type === 'trans4') {
+        document.getElementById('screenTrans4').classList.add('active');
+      } else if (step.type === 'trans5') {
+        document.getElementById('screenTrans5').classList.add('active');
+      } else if (step.type === 'cry') {
+        document.getElementById('screenCry').classList.add('active');
+      } else if (step.type === 'trans3') {
+        document.getElementById('screenTrans3').classList.add('active');
+      } else if (step.type === 'q10') {
+        document.getElementById('screenQ10').classList.add('active');
+      } else if (step.type === 'q') {
+        const qData = questions[step.index];
+        document.getElementById('qCategory').innerText = `PHASE ${step.index + 1}`;
+        document.getElementById('qTitle').innerText = qData.title.replace(/^Q(\d+)/, 'Question $1');
+        document.getElementById('qPrompt').innerText = qData.prompt;
+
+        const optionsContainer = document.getElementById('qOptions');
+        optionsContainer.innerHTML = '';
+        qData.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.innerHTML = `<span>${opt.text}</span> <span style="color:var(--accent-cyan)">➔</span>`;
+          btn.onclick = () => selectOption(step.index, idx);
+          optionsContainer.appendChild(btn);
+        });
+        document.getElementById('screenQuestion').classList.add('active');
+      } else if (step.type === 'results') {
+        calculateResult();
+        document.getElementById('win').classList.add('on');
+        confetti();
+        [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 0.2), i * 150));
+      }
+    }
+
+    function calculateResult() {
+      let scores = { Snapper: 0, Kahawai: 0, Trout: 0, Kingfish: 0 };
+      for (let qIdx in userAnswers) {
+        const optIdx = userAnswers[qIdx];
+        const opt = questions[qIdx].options[optIdx];
+        if (opt && opt.scores) {
+          for (let fish in opt.scores) scores[fish] += opt.scores[fish];
         }
-
-        function toggleAudio() {
-            soundEnabled = !soundEnabled;
-            if (soundEnabled && !audioCtx) {
-                initAudio();
-            }
-            
-            const statusText = soundEnabled ? "AUDIO ON" : "AUDIO OFF";
-            const iconClass = soundEnabled ? "fas fa-volume-high text-cyan-400" : "fas fa-volume-mute text-slate-500";
-            
-            document.getElementById("audioStatus").innerText = statusText;
-            document.getElementById("audioStatusDesktop").innerText = statusText;
-            document.getElementById("audioIcon").className = iconClass;
-            document.getElementById("audioIconDesktop").className = iconClass;
-
-            if (soundEnabled) playBeep(800, 0.05);
+      }
+      let maxFish = 'Snapper';
+      let maxVal = -1;
+      for (let fish in scores) {
+        if (scores[fish] > maxVal) {
+          maxVal = scores[fish];
+          maxFish = fish;
         }
+      }
+      const res = resultsData[maxFish];
+      document.getElementById('resFishTitle').innerText = res.title;
+      document.getElementById('resFishDesc').innerText = res.desc;
+      document.getElementById('resQuote').innerText = `"${userQ10Text}"`;
+      document.getElementById('winTitle').innerText = res.title;
+      document.getElementById('winDesc').innerText = res.desc;
+      document.getElementById('winQuote').innerText = `"${userQ10Text}"`;
+      document.getElementById('winFishBody').setAttribute('fill', { Snapper: '#ff7a8a', Kahawai: '#6ec6ff', Trout: '#ff9ad5', Kingfish: '#7a8cff' }[maxFish]);
+    }
 
-        function playBeep(freq = 600, duration = 0.08, type = 'sine') {
-            if (!soundEnabled || !audioCtx) return;
-            try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch(e){}
-        }
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-        function playReelSound() {
-            if (!soundEnabled || !audioCtx) return;
-            playBeep(400, 0.03, 'sawtooth');
-            setTimeout(() => playBeep(600, 0.03, 'sawtooth'), 40);
-        }
+    let angle = 0;
+    function drawSonar() {
+      ctx.fillStyle = 'rgba(6, 14, 24, 0.25)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        function playSplashSound() {
-            if (!soundEnabled || !audioCtx) return;
-            playBeep(150, 0.2, 'triangle');
-            setTimeout(() => playBeep(300, 0.15, 'sine'), 100);
-        }
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const maxRadius = Math.max(canvas.width, canvas.height) * 0.6;
 
-        const canvas = document.getElementById('sonarCanvas');
-        const ctx = canvas.getContext('2d');
-        let angle = 0;
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
+      ctx.lineWidth = 1;
+      for (let r = 100; r < maxRadius; r += 130) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+      angle += 0.012;
+      const sweepX = centerX + Math.cos(angle) * maxRadius;
+      const sweepY = centerY + Math.sin(angle) * maxRadius;
 
-        function drawSonar() {
-            ctx.fillStyle = 'rgba(3, 7, 18, 0.15)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const grad = ctx.createLinearGradient(centerX, centerY, sweepX, sweepY);
+      grad.addColorStop(0, 'rgba(0, 240, 255, 0.25)');
+      grad.addColorStop(1, 'rgba(0, 240, 255, 0)');
 
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const maxRadius = Math.max(canvas.width, canvas.height) * 0.7;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, maxRadius, angle - 0.2, angle);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
 
-            // Draw concentric rings
-            ctx.strokeStyle = 'rgba(6, 182, 212, 0.08)';
-            ctx.lineWidth = 1;
-            for (let r = 100; r < maxRadius; r += 120) {
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
-                ctx.stroke();
-            }
+      requestAnimationFrame(drawSonar);
+    }
+    drawSonar();
 
-            // Radar Line
-            const sweepX = centerX + Math.cos(angle) * maxRadius;
-            const sweepY = centerY + Math.sin(angle) * maxRadius;
-
-            const gradient = ctx.createLinearGradient(centerX, centerY, sweepX, sweepY);
-            gradient.addColorStop(0, 'rgba(6, 182, 212, 0.3)');
-            gradient.addColorStop(1, 'rgba(6, 182, 212, 0)');
-
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.arc(centerX, centerY, maxRadius, angle - 0.2, angle);
-            ctx.fillStyle = gradient;
-            ctx.fill();
-
-            angle += 0.015;
-            requestAnimationFrame(drawSonar);
-        }
-        drawSonar();
-
-        const quizSequence = [
-            { id: 'intro', type: 'intro' },
-            { id: 'q1', type: 'question', number: 1, text: "First, let's see how you're feeling today.", options: [
-                { label: "I feel pretty good", value: "good", trait: "Snapper" },
-                { label: "I feel pretty bad", value: "bad", trait: "Kahawai" },
-                { label: "I feel pretty ✨", value: "pretty", trait: "Kingfish" }
-            ]},
-            { id: 't1', type: 'transition', title: "AN ANGLER'S PATIENCE", text: "Today is a beautiful day and you decide to go fishing on a secluded island. However, it’s been hours and you still have not caught anything. You are getting impatient..", svg: 'korean_impatient' },
-            { id: 't2', type: 'transition', title: "HYPOTHETICAL TELEMETRY", text: "Here are some hypothetical scenarios, to keep you entertained while you wait for a fish to bite.", buttonText: "OK", svg: null },
-            { id: 'q2', type: 'question', number: 2, text: "A tiny fairy lives on top of your head...", options: [
-                { label: "Evict it and live in fear", value: "evict", trait: "Snapper" },
-                { label: "Let it stay and become friends", value: "friends", trait: "Rainbow Trout" },
-                { label: "Shave your head", value: "shave", trait: "Kahawai" }
-            ]},
-            { id: 'q3', type: 'question', number: 3, text: "If you were the last living being on Earth, what would you do?", options: [
-                { label: "Use the opportunity and build a new civilization from scratch", value: "rebuild", trait: "Kingfish" },
-                { label: "Nothing. You'd disappear too, because there's no one left to see you exist", value: "disappear", trait: "Snapper" },
-                { label: "Wander around and try to make friends with the bugs", value: "bugs", trait: "Rainbow Trout" }
-            ]},
-            { id: 'q4', type: 'question', number: 4, text: "It's a beautiful sunny day, and you're dehydrated. What snack are you bringing?", options: [
-                { label: "Microwave popcorn, but there's no microwave, so you eat the raw kernels", value: "popcorn", trait: "Kahawai" },
-                { label: "The grass looks green and yummy, so you just bite into it", value: "grass", trait: "Rainbow Trout" },
-                { label: "A whole cow, disguised as a bag of chips", value: "cow", trait: "Kingfish" }
-            ]},
-            { id: 'q5', type: 'question', number: 5, text: "The aliens have, for whatever reason, decided to abduct you. You feel pretty indifferent about it. What do you bring from Earth?", options: [
-                { label: "Your Vyvanse, so you can be productive in space", value: "vyvanse", trait: "Kingfish" },
-                { label: "Kimchi", value: "kimchi", trait: "Snapper" },
-                { label: "A pen and paper, to record your experiences", value: "pen", trait: "Rainbow Trout" }
-            ]},
-            { id: 't_abduct', type: 'abduction_graphic' },
-            { id: 't_alien_return', type: 'alien_return' },
-            { id: 'q6', type: 'question', number: 6, text: "You went somewhere because they promised free food. Turns out it's a cult. Thankfully, they don't do anything bad or weird. The only rule is that you have to tell everyone in your life you're in a weird cult. Do you join?", options: [
-                { label: "Join", value: "join", trait: "Kahawai" }
-            ]},
-            { id: 't3', type: 'transition', title: "REACTION TEST", text: "Now let's see how you'd react in these situations.", buttonText: "OK", svg: null },
-            { id: 'q7', type: 'question', number: 7, text: "You're offered $50,000, but for the rest of your life, every time you enter a bedroom there's a 10% chance a horse is already in there. You can't remove the horse. Do you accept?", options: [
-                { label: "Yes", value: "yes", trait: "Kingfish" },
-                { label: "No", value: "no", trait: "Snapper" }
-            ]},
-            { id: 'q8', type: 'question', number: 8, text: "You're given the house of your dreams for free. But one room is occupied by someone you never see. They never cause any trouble, but sometimes you hear them crying at night. Do you accept?", options: [
-                { label: "Yes", value: "yes", trait: "Rainbow Trout" },
-                { label: "No", value: "no", trait: "Kahawai" }
-            ]},
-            { id: 'q9', type: 'question', number: 9, text: "A goose the size of a golden retriever moves in next door...", options: [
-                { label: "Leave a tiny welcome basket on its doorstep", value: "basket", trait: "Rainbow Trout" },
-                { label: "Stare back until one of you blinks", value: "stare", trait: "Snapper" },
-                { label: "Start a podcast together, because clearly it has a lot to say", value: "podcast", trait: "Kingfish" }
-            ]},
-            { id: 'q10', type: 'q10_freetext' },
-            { id: 'results', type: 'results' }
-        ];
-
-        let currentIndex = 0;
-        let answers = {};
-        let q10Message = "";
-
-        function updateTelemetry() {
-            const currentStep = quizSequence[currentIndex];
-            let questionNum = 0;
-
-            // Calculate total questions up to Q10
-            if (currentStep.type === 'question') {
-                questionNum = currentStep.number;
-            } else if (currentStep.id === 'q10') {
-                questionNum = 10;
-            } else {
-                // Find nearest previous question number
-                for (let i = currentIndex; i >= 0; i--) {
-                    if (quizSequence[i].type === 'question') {
-                        questionNum = quizSequence[i].number;
-                        break;
-                    }
-                }
-            }
-
-            if (currentStep.id === 'results') questionNum = 10;
-
-            const stageElem = document.getElementById('metricStage');
-            const lineBar = document.getElementById('metricLineBar');
-            const lineText = document.getElementById('metricLineText');
-            const depthElem = document.getElementById('metricDepth');
-            const tensionElem = document.getElementById('metricTensionText');
-
-            const pct = Math.min(100, Math.round((questionNum / 10) * 100));
-            
-            stageElem.innerText = `${questionNum} / 10`;
-            lineBar.style.width = `${pct}%`;
-            lineText.innerText = `${pct}%`;
-
-            // Depth count down from 500m to 0m
-            const currentDepth = Math.max(0, 500 - Math.round((questionNum / 10) * 500));
-            depthElem.innerText = `${currentDepth} m`;
-
-            // Dynamic tension reading
-            if (questionNum === 0) {
-                tensionElem.innerText = "IDLE (0kg)";
-                tensionElem.className = "text-xs font-bold text-emerald-400";
-            } else if (questionNum < 5) {
-                tensionElem.innerText = "LOW (12kg)";
-                tensionElem.className = "text-xs font-bold text-cyan-400";
-            } else if (questionNum < 9) {
-                tensionElem.innerText = "MED (48kg)";
-                tensionElem.className = "text-xs font-bold text-amber-400";
-            } else {
-                tensionElem.innerText = "HIGH (95kg)";
-                tensionElem.className = "text-xs font-bold text-rose-500 animate-pulse";
-            }
-        }
-
-        function nextStep() {
-            if (currentIndex < quizSequence.length - 1) {
-                currentIndex++;
-                playReelSound();
-                renderStep();
-            }
-        }
-
-        function prevStep() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                playBeep(400, 0.05);
-                renderStep();
-            }
-        }
-
-        function selectOption(qId, trait, value) {
-            answers[qId] = trait;
-            nextStep();
-        }
-
-        function renderStep() {
-            updateTelemetry();
-            const container = document.getElementById('appContainer');
-            const step = quizSequence[currentIndex];
-
-            let html = "";
-
-            // Back button banner (if applicable)
-            const showBack = currentIndex > 0 && step.id !== 'results';
-            const backButtonHtml = showBack ? `
-                <button onclick="prevStep()" class="mb-6 flex items-center gap-2 text-xs font-mono text-cyan-400/80 hover:text-cyan-300 transition bg-slate-900/60 px-3 py-1.5 rounded-lg border border-cyan-900/60 w-fit">
-                    <i class="fas fa-chevron-left"></i> REWIND TELEMETRY
-                </button>
-            ` : '';
-
-            if (step.id === 'intro') {
-                html = `
-                    <div class="text-center py-8">
-                        <div class="inline-block p-4 rounded-full bg-cyan-950/80 border border-cyan-500/30 mb-6 animate-bounce">
-                            <i class="fas fa-anchor text-4xl text-cyan-400"></i>
-                        </div>
-                        <h1 class="text-3xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-300 mb-4 tracking-tight">
-                            Happy Birthday, Peter!
-                        </h1>
-                        <p class="text-slate-300 max-w-lg mx-auto mb-8 text-sm sm:text-base leading-relaxed font-light">
-                            Welcome aboard the Deep Sea Research Vessel. Sonar signals indicate a rare specimen waiting in the depths below. Let's calibrate your maritime personality telemetry.
-                        </p>
-                        <button onclick="nextStep()" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold tracking-wider uppercase font-mono shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition active:translate-y-0">
-                            LET'S TAKE A TEST <i class="fas fa-arrow-right ml-2"></i>
-                        </button>
-                    </div>
-                `;
-            } 
-            else if (step.type === 'question') {
-                html = `
-                    ${backButtonHtml}
-                    <div class="space-y-6">
-                        <div class="flex items-center gap-2 font-mono text-xs text-cyan-400">
-                            <span class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800">QUESTION ${step.number} / 10</span>
-                        </div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-slate-100 leading-snug">
-                            ${step.text}
-                        </h2>
-                        <div class="grid grid-cols-1 gap-3 pt-2">
-                            ${step.options.map(opt => `
-                                <button onclick="selectOption('${step.id}', '${opt.trait}', '${opt.value}')" class="p-4 rounded-xl border border-slate-700/80 bg-slate-900/60 hover:bg-cyan-950/60 hover:border-cyan-500/60 text-left transition duration-200 group flex items-center justify-between">
-                                    <span class="text-sm sm:text-base text-slate-200 group-hover:text-cyan-200 font-medium">${opt.label}</span>
-                                    <i class="fas fa-chevron-right text-slate-600 group-hover:text-cyan-400 transition-transform group-hover:translate-x-1"></i>
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-            else if (step.type === 'transition') {
-                let svgGraphic = "";
-                if (step.svg === 'korean_impatient') {
-                    svgGraphic = `
-                        <div class="my-6 flex justify-center">
-                            <svg class="w-32 h-32 animate-stamp" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Fishing Boat -->
-                                <path d="M10 70 L90 70 L80 85 L20 85 Z" fill="#1e293b" stroke="#0891b2" stroke-width="2"/>
-                                <!-- Impatient Little Korean Fisher -->
-                                <circle cx="50" cy="35" r="10" fill="#fca5a5"/>
-                                <!-- Fisher Cap -->
-                                <path d="M38 32 C38 25, 62 25, 62 32 Z" fill="#0284c7"/>
-                                <path d="M35 32 L65 32" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
-                                <!-- Body & Arms crossed -->
-                                <rect x="42" y="45" width="16" height="20" rx="3" fill="#0369a1"/>
-                                <path d="M40 50 L60 50" stroke="#fca5a5" stroke-width="4" stroke-linecap="round"/>
-                                <!-- Angry eyes -->
-                                <path d="M46 34 L49 36" stroke="#000" stroke-width="1.5"/>
-                                <path d="M54 34 L51 36" stroke="#000" stroke-width="1.5"/>
-                                <!-- Fishing Rod -->
-                                <path d="M60 50 L95 20" stroke="#94a3b8" stroke-width="2"/>
-                                <path d="M95 20 L95 75" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 2"/>
-                            </svg>
-                        </div>
-                    `;
-                }
-
-                html = `
-                    ${backButtonHtml}
-                    <div class="text-center py-4">
-                        <div class="font-mono text-xs text-cyan-400 tracking-widest uppercase mb-2">[ NAV LOG UPDATE ]</div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-slate-100 mb-4">${step.title || 'TELEMETRY SEQUENCE'}</h2>
-                        ${svgGraphic}
-                        <p class="text-slate-300 max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-8 font-light">
-                            ${step.text}
-                        </p>
-                        <button onclick="nextStep()" class="px-8 py-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-mono tracking-wider uppercase shadow-lg shadow-cyan-600/30 transition">
-                            ${step.buttonText || 'CONTINUE'} <i class="fas fa-arrow-right ml-2"></i>
-                        </button>
-                    </div>
-                `;
-            }
-            else if (step.type === 'abduction_graphic') {
-                html = `
-                    ${backButtonHtml}
-                    <div class="text-center py-4">
-                        <div class="font-mono text-xs text-purple-400 tracking-widest uppercase mb-2">[ EXTRA-TERRESTRIAL CONTACT ]</div>
-                        
-                        <div class="my-6 relative flex justify-center items-center h-48">
-                            <!-- Animated UFO -->
-                            <div class="absolute top-0 animate-ufo z-10">
-                                <svg class="w-32 h-16" viewBox="0 0 100 50">
-                                    <ellipse cx="50" cy="25" rx="40" ry="12" fill="#475569" stroke="#a855f7" stroke-width="2"/>
-                                    <ellipse cx="50" cy="20" rx="20" ry="12" fill="#c084fc" opacity="0.8"/>
-                                    <circle cx="30" cy="27" r="2" fill="#fef08a"/>
-                                    <circle cx="50" cy="29" r="2" fill="#fef08a"/>
-                                    <circle cx="70" cy="27" r="2" fill="#fef08a"/>
-                                </svg>
-                            </div>
-                            <!-- Abduction Beam -->
-                            <div class="absolute top-12 w-32 h-32 bg-gradient-to-b from-purple-500/40 to-transparent animate-beam clip-path-beam"></div>
-                            <!-- Little Fisher Being Lifted -->
-                            <div class="absolute bottom-4 animate-bounce">
-                                <svg class="w-12 h-12" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="35" r="10" fill="#fca5a5"/>
-                                    <rect x="42" y="45" width="16" height="20" rx="3" fill="#0369a1"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <p class="text-slate-300 max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-6 font-light">
-                            A bright tractor beam locks onto your fishing boat! You are being lifted into space!
-                        </p>
-
-                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <button onclick="nextStep()" class="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold font-mono tracking-wider uppercase transition">
-                                HELP! <i class="fas fa-hand-holding-medical ml-1"></i>
-                            </button>
-                            <button onclick="nextStep()" class="px-6 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-mono tracking-wider uppercase transition">
-                                LET'S GO! <i class="fas fa-rocket ml-1"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-            else if (step.type === 'alien_return') {
-                html = `
-                    ${backButtonHtml}
-                    <div class="text-center py-6">
-                        <div class="inline-block p-3 rounded-full bg-purple-950 border border-purple-500/40 text-purple-400 mb-4">
-                            <i class="fas fa-user-astronaut text-3xl"></i>
-                        </div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-slate-100 mb-4">ALIEN TELEMETRY EJECT</h2>
-                        <p class="text-slate-300 max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-8 font-light">
-                            Oh no, the aliens have realized that you are too annoying and ask too many questions. They don’t want you.
-                        </p>
-                        <button onclick="nextStep()" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold font-mono tracking-wider uppercase shadow-lg transition">
-                            BACK TO FISHING <i class="fas fa-fish ml-2"></i>
-                        </button>
-                    </div>
-                `;
-            }
-            else if (step.id === 'q10') {
-                html = `
-                    ${backButtonHtml}
-                    <div class="space-y-6">
-                        <div class="flex items-center gap-2 font-mono text-xs text-cyan-400">
-                            <span class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800">QUESTION 10 / 10 • FINAL SPECIES TRANSMISSION</span>
-                        </div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-slate-100 leading-snug">
-                            Okay, last one, and this one's real. If you could send a message to your younger self from 10 years ago, what would you say?
-                        </h2>
-                        <div class="pt-2">
-                            <textarea id="q10Input" rows="4" class="w-full bg-slate-900/90 border border-cyan-700/60 rounded-xl p-4 text-slate-100 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono text-sm placeholder-slate-500" placeholder="Type your message to 10-years-ago Peter...">${q10Message}</textarea>
-                        </div>
-                        <button onclick="submitQ10()" class="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold font-mono tracking-wider uppercase shadow-lg shadow-cyan-500/20 transition">
-                            TRANSMIT TELEMETRY & REEL IN <i class="fas fa-check-circle ml-2"></i>
-                        </button>
-                    </div>
-                `;
-            }
-            else if (step.type === 'results') {
-                renderResults();
-                return;
-            }
-
-            container.innerHTML = html;
-        }
-
-        function submitQ10() {
-            const textarea = document.getElementById('q10Input');
-            if (textarea) {
-                q10Message = textarea.value.trim() || "Buy Bitcoin and don't forget to laugh!";
-            }
-            playSplashSound();
-            nextStep();
-        }
-
-        function calculateResult() {
-            const counts = { Snapper: 0, Kahawai: 0, "Rainbow Trout": 0, Kingfish: 0 };
-            Object.values(answers).forEach(trait => {
-                if (counts[trait] !== undefined) counts[trait]++;
-            });
-
-            let winner = "Snapper";
-            let maxCount = -1;
-            for (const [fish, count] of Object.entries(counts)) {
-                if (count > maxCount) {
-                    maxCount = count;
-                    winner = fish;
-                }
-            }
-            return winner;
-        }
-
-        function renderResults() {
-            const winner = calculateResult();
-            const container = document.getElementById('appContainer');
-
-            const descriptions = {
-                "Snapper": "You are a Snapper! Practical, sharp, and down-to-earth. You don't let nonsense distract you from what matters, though you might occasionally judge people who try to start podcasts with geese.",
-                "Kahawai": "You are a Kahawai! Energetic, slightly chaotic, and always up for an adventure (or a cult with free food). You roll with the punches, even when eating raw popcorn kernels.",
-                "Rainbow Trout": "You are a Rainbow Trout! Empathetic, imaginative, and deeply curious. You're the kind of person who leaves welcome baskets for giant geese and tries to make friends with bugs.",
-                "Kingfish": "You are a Kingfish! Bold, ambitious, and unstoppable. Whether it's taking a 10% horse gamble or rebuilding civilization from scratch, you play to win."
-            };
-
-            const icons = {
-                "Snapper": "fa-fish text-rose-400",
-                "Kahawai": "fa-water text-cyan-400",
-                "Rainbow Trout": "fa-wand-magic-sparkles text-amber-300",
-                "Kingfish": "fa-crown text-yellow-400"
-            };
-
-            container.innerHTML = `
-                <div class="text-center py-6 space-y-6">
-                    <div class="inline-block px-4 py-1.5 rounded-full bg-cyan-950 border border-cyan-500/50 text-cyan-300 font-mono text-xs tracking-widest uppercase animate-pulse">
-                        <i class="fas fa-check-double mr-2"></i> CATCH SUCCESSFUL!
-                    </div>
-
-                    <div class="my-4">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-slate-900 border-2 border-cyan-400/60 flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-4">
-                            <i class="fas ${icons[winner]} text-5xl"></i>
-                        </div>
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-indigo-300 tracking-tight">
-                            ${winner}
-                        </h2>
-                    </div>
-
-                    <p class="text-slate-200 max-w-xl mx-auto text-base sm:text-lg leading-relaxed bg-slate-900/80 p-6 rounded-2xl border border-slate-800 text-left">
-                        ${descriptions[winner]}
-                    </p>
-
-                    ${q10Message ? `
-                        <div class="max-w-xl mx-auto text-left bg-cyan-950/40 border-l-4 border-cyan-400 p-4 rounded-r-xl">
-                            <div class="font-mono text-xs text-cyan-400 uppercase tracking-wider mb-1">
-                                <i class="fas fa-quote-left mr-1"></i> Message to 10-Years-Ago Peter:
-                            </div>
-                            <blockquote class="text-slate-300 italic font-mono text-sm">
-                                "${q10Message}"
-                            </blockquote>
-                        </div>
-                    ` : ''}
-
-                    <div class="pt-4">
-                        <button onclick="restartQuiz()" class="px-8 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold font-mono tracking-wider uppercase border border-cyan-500/40 transition">
-                            <i class="fas fa-rotate-right mr-2"></i> RESTART TEST
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function restartQuiz() {
-            currentIndex = 0;
-            answers = {};
-            q10Message = "";
-            renderStep();
-        }
-
-        window.onload = function() {
-            renderStep();
-        };
-    </script>
+    renderStep();
+  </script>
 </body>
 </html>
