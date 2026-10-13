@@ -454,6 +454,15 @@
 #ret{position:fixed;inset:0;z-index:100;display:none;background:#02030a;overflow:hidden}
 #ret.on{display:block}
 #ret svg{position:absolute;inset:0;width:100%;height:100%}
+#dance{position:fixed;inset:0;z-index:100;display:none;background:#02030a;overflow:hidden}
+#dance.on{display:block}
+#dance svg{position:absolute;inset:0;width:100%;height:100%}
+.dz{animation:dz .45s ease-in-out infinite alternate}
+@keyframes dz{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+.flick{animation:flick .3s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes flick{from{transform:scale(1,1)}to{transform:scale(.9,1.15)}}
+.spark{animation:sparkUp 1.6s linear infinite}
+@keyframes sparkUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-140px);opacity:0}}
 .fall{animation:fallIn 3s ease-in infinite;transform-origin:400px 380px}
 @keyframes fallIn{0%{transform:translateY(-330px) rotate(0) scale(.6,.6)}65%{transform:translateY(0) rotate(720deg) scale(1,1)}70%{transform:translateY(6px) rotate(720deg) scale(1.15,.8)}80%,100%{transform:translateY(0) rotate(720deg) scale(1,1)}}
 .boatHit{animation:boatHit 3s infinite}
@@ -515,6 +524,44 @@
       <button class="btn-back" onclick="prevStep()">← BACK</button>
       <button class="action-btn" onclick="nextStep()">HELP!</button>
       <button class="action-btn" style="background:linear-gradient(135deg,#ff3366,#ff7700)" onclick="nextStep()">LET'S GO!</button>
+    </div>
+  </div>
+
+  <div id="dance">
+    <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="glow"><stop offset="0" stop-color="#ff9a3c" stop-opacity=".75"/><stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/></radialGradient>
+        <g id="cul"><line x1="-12" y1="-62" x2="-32" y2="-94" stroke="#5b2a86" stroke-width="9" stroke-linecap="round"/><line x1="12" y1="-62" x2="32" y2="-94" stroke="#5b2a86" stroke-width="9" stroke-linecap="round"/><path d="M-22 0 L-14 -70 Q0 -84 14 -70 L22 0Z" fill="#5b2a86"/><circle cx="0" cy="-80" r="17" fill="#5b2a86"/><ellipse cx="0" cy="-78" rx="10" ry="11" fill="#14101c"/><circle cx="-4" cy="-80" r="2" fill="#ffd166"/><circle cx="4" cy="-80" r="2" fill="#ffd166"/></g>
+        <g id="pet"><line x1="-12" y1="-62" x2="-34" y2="-98" stroke="#ffe0bd" stroke-width="9" stroke-linecap="round"/><line x1="12" y1="-62" x2="34" y2="-98" stroke="#ffe0bd" stroke-width="9" stroke-linecap="round"/><line x1="-7" y1="-24" x2="-9" y2="0" stroke="#223" stroke-width="8"/><line x1="7" y1="-24" x2="9" y2="0" stroke="#223" stroke-width="8"/><rect x="-15" y="-66" width="30" height="42" rx="8" fill="#0077ff"/><circle cx="0" cy="-82" r="17" fill="#ffe0bd"/><path d="M-17 -84 Q-17 -102 0 -102 Q17 -102 17 -84 Q8 -92 0 -90 Q-8 -92 -17 -84Z" fill="#332211"/><path d="M-10 -82 Q-7 -88 -4 -82" stroke="#222" stroke-width="2" fill="none"/><path d="M4 -82 Q7 -88 10 -82" stroke="#222" stroke-width="2" fill="none"/><path d="M-8 -74 Q0 -64 8 -74Z" fill="#7a1f2b"/></g>
+      </defs>
+      <rect x="-30" y="-30" width="860" height="560" fill="url(#sky)"/>
+      <circle cx="110" cy="80" r="34" fill="#dfe9ff" opacity=".85"/>
+      <circle cx="300" cy="50" r="2.5" fill="#fff"/><circle cx="520" cy="90" r="2" fill="#fff"/><circle cx="640" cy="40" r="2.5" fill="#fff"/><circle cx="760" cy="130" r="2" fill="#fff"/><circle cx="220" cy="150" r="2" fill="#fff"/>
+      <rect x="-30" y="345" width="860" height="170" fill="#10281c"/>
+      <g fill="#0a1a12"><polygon points="20,345 70,190 120,345"/><polygon points="110,345 150,230 190,345"/><polygon points="640,345 690,200 740,345"/><polygon points="720,345 770,170 820,345"/></g>
+      <line x1="700" y1="350" x2="700" y2="262" stroke="#6b4423" stroke-width="6"/><rect x="640" y="236" width="120" height="36" rx="4" fill="#c68a4a"/><text x="700" y="260" text-anchor="middle" font-size="16" font-weight="800" fill="#3b2410" font-family="Inter,sans-serif">FREE FOOD*</text><text x="700" y="290" text-anchor="middle" font-size="10" fill="#ddd" font-family="Inter,sans-serif">*terms apply</text>
+      <g transform="translate(200,368) scale(.8)"><use href="#cul" class="dz" style="animation-delay:-.1s"/></g>
+      <g transform="translate(300,368) scale(.8)"><use href="#cul" class="dz" style="animation-delay:-.3s"/></g>
+      <g transform="translate(500,368) scale(.8)"><use href="#cul" class="dz" style="animation-delay:-.2s"/></g>
+      <g transform="translate(600,368) scale(.8)"><use href="#cul" class="dz" style="animation-delay:-.4s"/></g>
+      <circle cx="400" cy="350" r="170" fill="url(#glow)"/>
+      <line x1="358" y1="376" x2="442" y2="360" stroke="#5a3a1a" stroke-width="11" stroke-linecap="round"/><line x1="358" y1="360" x2="442" y2="376" stroke="#6b4423" stroke-width="11" stroke-linecap="round"/>
+      <path class="flick" d="M368 368 Q358 330 385 296 Q392 330 412 316 Q434 340 432 368Z" fill="#ff6a00"/><path class="flick" style="animation-delay:-.15s" d="M386 368 Q380 342 400 320 Q416 345 416 368Z" fill="#ffd166"/>
+      <circle class="spark" cx="390" cy="300" r="3" fill="#ffd166"/><circle class="spark" style="animation-delay:-.5s" cx="410" cy="305" r="2.5" fill="#ff9a3c"/><circle class="spark" style="animation-delay:-1s" cx="400" cy="298" r="3" fill="#ffd166"/>
+      <g transform="translate(130,455)"><use href="#cul" class="dz" style="animation-delay:-.2s"/></g>
+      <g transform="translate(250,455)"><use href="#cul" class="dz" style="animation-delay:-.35s"/></g>
+      <g transform="translate(550,455)"><use href="#cul" class="dz" style="animation-delay:-.05s"/></g>
+      <g transform="translate(670,455)"><use href="#cul" class="dz" style="animation-delay:-.25s"/></g>
+      <g transform="translate(400,490) scale(1.2)"><use href="#pet" class="dz" style="animation-duration:.3s"/></g>
+      <text x="450" y="432" font-size="22" font-weight="800" fill="#ffd166" stroke="#000" stroke-width="4" paint-order="stroke" font-family="Inter,sans-serif">THIS IS FINE!</text>
+    </svg>
+    <div class="abd-ui abd-top">
+      <div class="abd-title" style="color:#ff9a3c;text-shadow:0 0 18px #ff6a00">THE CULT RITUAL 🔥</div>
+      <div class="abd-sub">Peter joins in. Enthusiastically.</div>
+    </div>
+    <div class="abd-ui abd-bot">
+      <button class="btn-back" onclick="prevStep()">← BACK</button>
+      <button class="action-btn" onclick="nextStep()">CONTINUE →</button>
     </div>
   </div>
 
@@ -660,7 +707,8 @@
       <div class="screen active" id="screenIntro">
         <span class="catch-badge">SYSTEM READY</span>
         <h1 class="screen-title">Happy birthday, Peter! 🎣</h1>
-        <p class="screen-subtitle">Cast your line into the Waiheke waters and take the test to reel in your custom New Zealand fish personality.</p>
+        <p class="screen-subtitle">Cast your line into the waters and take the test to reel in your unique New Zealand fish personality.</p>
+        <p class="screen-subtitle">Be careful, you might encounter some obstacles along the way.<br>But don't give up.</p>
         <button class="action-btn" onclick="startQuiz()">LET'S TAKE A TEST</button>
       </div>
 
@@ -770,6 +818,18 @@
         </div>
       </div>
 
+      <div class="screen" id="screenLonely">
+        <div class="graphic-box" style="height:200px">
+          <svg width="360" height="180" viewBox="0 0 360 180"><circle cx="310" cy="34" r="16" fill="#dfe9ff" opacity=".8"/><rect y="120" width="360" height="60" fill="#0b3a73"/><g class="bob"><path d="M110 118 L250 118 L228 148 L132 148Z" fill="#1b3b6f" stroke="#00f0ff" stroke-width="1.5"/><line x1="190" y1="100" x2="216" y2="114" stroke="#ffe0bd" stroke-width="6" stroke-linecap="round"/><line x1="216" y1="114" x2="280" y2="58" stroke="#00f0ff" stroke-width="2"/><rect x="164" y="88" width="34" height="32" rx="8" fill="#0077ff"/><circle cx="176" cy="76" r="18" fill="#ffe0bd"/><path d="M158 74 Q158 56 176 56 Q194 56 194 74 Q184 64 176 66 Q166 64 158 74Z" fill="#332211"/><path d="M167 78 l7 0 M181 78 l7 0" stroke="#222" stroke-width="2.5"/><path d="M168 90 Q176 84 186 90" stroke="#7a1f2b" stroke-width="2.5" fill="none"/><circle cx="168" cy="84" r="2.5" fill="#6fd3ff"/></g><line x1="280" y1="58" x2="282" y2="134" stroke="#00f0ff" stroke-width="1" stroke-dasharray="3,3"/><circle cx="282" cy="134" r="4" fill="#ff3366"/><ellipse cx="176" cy="26" rx="40" ry="14" fill="#5a6b80"/><ellipse cx="154" cy="32" rx="22" ry="10" fill="#5a6b80"/><ellipse cx="198" cy="32" rx="22" ry="10" fill="#5a6b80"/><path class="tear" d="M160 44 L160 64 M176 44 L176 64 M192 44 L192 64" stroke="#6fd3ff" stroke-width="2"/></svg>
+        </div>
+        <h2 class="screen-title">Alone Again... 🌊</h2>
+        <p class="screen-subtitle">"The cult let you go because they felt bad for you."</p>
+        <div class="nav-buttons-row">
+          <button class="btn-back" onclick="prevStep()">← BACK</button>
+          <button class="action-btn" onclick="nextStep()">CONTINUE →</button>
+        </div>
+      </div>
+
       <div class="screen" id="screenTrans3">
         <h2 class="screen-title">Final Phase Incoming</h2>
         <p class="screen-subtitle">"Now let's see how you'd react in these situations."</p>
@@ -783,7 +843,8 @@
         <span class="catch-badge">FINAL QUESTION</span>
         <h2 class="screen-title">Question 10 — Message Through Time</h2>
         <p class="screen-subtitle">"Okay, last one, and this one's real. If you could send a message to your younger self from 10 years ago, what would you say?"</p>
-        <textarea class="custom-textarea" id="q10Text" placeholder="Type your message here..."></textarea>
+        <textarea class="custom-textarea" id="q10Text" placeholder="Type your message here..." oninput="this.style.borderColor=''"></textarea>
+        <p class="screen-subtitle" style="font-size:.85rem">🔒 No message, no fish Be creative.</p>
         <div class="nav-buttons-row">
           <button class="btn-back" onclick="prevStep()">← BACK</button>
           <button class="action-btn" onclick="submitQ10()">REEL IN FINAL CATCH 🎣</button>
@@ -972,7 +1033,7 @@
       },
       {
         id: 'Q6',
-        title: 'Q6 — The cult',
+        title: 'Q9 — The cult',
         prompt: '"You went somewhere because they promised free food. Turns out it\'s a cult. Thankfully, they don\'t do anything bad or weird. The only rule is that you have to tell everyone in your life you\'re in a weird cult. Do you join?"',
         options: [
           { text: 'Join', scores: { Snapper: 2, Kahawai: 1 } }
@@ -980,7 +1041,7 @@
       },
       {
         id: 'Q7',
-        title: 'Q7 — The horse',
+        title: 'Q6 — The horse',
         prompt: '"You\'re offered $50,000, but for the rest of your life, every time you enter a bedroom there\'s a 10% chance a horse is already in there. You can\'t remove the horse. Do you accept?"',
         options: [
           { text: 'Yes', scores: { Kahawai: 2, Kingfish: 1 } },
@@ -989,7 +1050,7 @@
       },
       {
         id: 'Q8',
-        title: 'Q8 — The house',
+        title: 'Q7 — The house',
         prompt: '"You\'re given the house of your dreams for free. But one room is occupied by someone you never see. They never cause any trouble, but sometimes you hear them crying at night. Do you accept?"',
         options: [
           { text: 'Yes', scores: { Snapper: 2, Kahawai: 1 } },
@@ -998,7 +1059,7 @@
       },
       {
         id: 'Q9',
-        title: 'Q9 — The goose',
+        title: 'Q8 — The goose',
         prompt: '"A goose the size of a golden retriever moves in next door. It isn\'t aggressive, but every morning it stands at your window and stares at you. What do you do?"',
         options: [
           { text: 'Leave a tiny welcome basket on its doorstep', scores: { Snapper: 2, Trout: 1 } },
@@ -1041,11 +1102,13 @@
       { type: 'trans4' },
       { type: 'cry' },
       { type: 'trans5' },
-      { type: 'q', index: 5 },
-      { type: 'trans3' },
       { type: 'q', index: 6 },
       { type: 'q', index: 7 },
       { type: 'q', index: 8 },
+      
+      { type: 'q', index: 5 },
+      { type: 'dance' },
+      { type: 'lonely' },
       { type: 'q10' },
       { type: 'results' }
     ];
@@ -1085,7 +1148,15 @@
 
     function submitQ10() {
       const val = document.getElementById('q10Text').value.trim();
-      userQ10Text = val ? val : "No message sent!";
+      if (!val) {
+        const t = document.getElementById('q10Text');
+        t.style.borderColor = '#ff3366';
+        t.placeholder = 'You have to send a message to catch the fish! 🎣';
+        t.focus();
+        playTone(200, 0.2);
+        return;
+      }
+      userQ10Text = val;
       playTone(1000, 0.15);
       nextStep();
     }
@@ -1151,6 +1222,7 @@
       document.getElementById('abd').classList.remove('on');
       document.getElementById('win').classList.remove('on');
       document.getElementById('ret').classList.remove('on');
+      document.getElementById('dance').classList.remove('on');
       const step = sequence[stepIndex];
 
       if (step.type === 'intro') {
@@ -1166,6 +1238,11 @@
         document.getElementById('ret').classList.add('on');
       } else if (step.type === 'trans4') {
         document.getElementById('screenTrans4').classList.add('active');
+      } else if (step.type === 'dance') {
+        document.getElementById('dance').classList.add('on');
+        [0, 1, 2, 3].forEach(i => setTimeout(() => playTone(110, 0.15), i * 400));
+      } else if (step.type === 'lonely') {
+        document.getElementById('screenLonely').classList.add('active');
       } else if (step.type === 'trans5') {
         document.getElementById('screenTrans5').classList.add('active');
       } else if (step.type === 'cry') {
@@ -1176,7 +1253,7 @@
         document.getElementById('screenQ10').classList.add('active');
       } else if (step.type === 'q') {
         const qData = questions[step.index];
-        document.getElementById('qCategory').innerText = `PHASE ${step.index + 1}`;
+        document.getElementById('qCategory').innerText = `PHASE ${qData.title.match(/\d+/)[0]}`;
         document.getElementById('qTitle').innerText = qData.title.replace(/^Q(\d+)/, 'Question $1');
         document.getElementById('qPrompt').innerText = qData.prompt;
 
