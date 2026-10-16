@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Peter's Birthday Fishing Personality Quiz</title>
+  <title>HAPPY BIRTHDAY</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -706,7 +706,7 @@
     <div class="dashboard-grid">
       <div class="status-card">
         <span class="status-label">Quiz Stage</span>
-        <span class="status-value" id="valStage">0 / 10</span>
+        <span class="status-value" id="valStage">0 / 12</span>
       </div>
       
       <div class="status-card">
@@ -870,7 +870,7 @@
 
       <div class="screen" id="screenQ10">
         <span class="catch-badge">FINAL QUESTION</span>
-        <h2 class="screen-title">Question 10 — Message Through Time</h2>
+        <h2 class="screen-title">Question 12 — Message Through Time</h2>
         <p class="screen-subtitle">"Okay, last one, and this one's real. If you could send a message to your younger self from 10 years ago, what would you say?"</p>
         <textarea class="custom-textarea" id="q10Text" placeholder="Type your message here..." oninput="this.style.borderColor=''"></textarea>
         <p class="screen-subtitle" style="font-size:.85rem">🔒 No message, no fish. Peter can't reel in his catch until he sends one.</p>
@@ -1060,13 +1060,13 @@
         prompt: '"The aliens have, for whatever reason, decided to abduct you. You feel pretty indifferent about it. What do you bring from Earth?"',
         options: [
           { text: 'Your Vyvanse, so you can be productive in space', scores: { Kahawai: 2, Trout: 1 } },
-          { text: 'Kimchi', scores: { Snapper: 2, Kingfish: 1 } },
+          { text: 'Kimchi because you want to share it with the aliens.', scores: { Snapper: 2, Kingfish: 1 } },
           { text: 'A pen and paper, to record your experiences', scores: { Trout: 2, Snapper: 1 } }
         ]
       },
       {
         id: 'Q6',
-        title: 'Q9 — The cult',
+        title: 'Q11 — The cult',
         prompt: '"You went somewhere because they promised free food. Turns out it\'s a cult. Thankfully, they don\'t do anything bad or weird. The only rule is that you have to tell everyone in your life you\'re in a weird cult. Do you join?"',
         options: [
           { text: 'Join', scores: { Snapper: 2, Kahawai: 1 } }
@@ -1100,6 +1100,26 @@
         ]
       }
     ];
+
+    questions.push({
+      id: 'Q9',
+      title: 'Q9 — Would you rather',
+      prompt: '"Would you rather..."',
+      options: [
+        { text: 'Hug all of your coworkers every day when you come to work and when you leave work', scores: { Snapper: 2, Kahawai: 1 } },
+        { text: 'Kiss one of your coworkers on the mouth once a month', scores: { Kahawai: 2, Kingfish: 1 } }
+      ]
+    });
+
+    questions.push({
+      id: 'Q10',
+      title: 'Q10 — Would you rather',
+      prompt: '"Would you rather..."',
+      options: [
+        { text: 'Never be reborn', scores: { Trout: 2, Kingfish: 1 } },
+        { text: 'Be reborn as a snail and live a happy life', scores: { Snapper: 2, Kahawai: 1 } }
+      ]
+    });
 
     const resultsData = {
       Snapper: {
@@ -1137,6 +1157,8 @@
       { type: 'q', index: 6 },
       { type: 'q', index: 7 },
       { type: 'q', index: 8 },
+      { type: 'q', index: 9 },
+      { type: 'q', index: 10 },
       
       { type: 'q', index: 5 },
       { type: 'dance' },
@@ -1203,17 +1225,17 @@
 
     function updateTelemetryAndGraphic() {
       let completedQuestions = 0;
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 11; i++) {
         if (userAnswers[i] !== undefined) completedQuestions++;
       }
       const currentSeq = sequence[stepIndex];
-      if (currentSeq.type === 'results') completedQuestions = 10;
+      if (currentSeq.type === 'results') completedQuestions = 12;
 
-      const percent = Math.round((completedQuestions / 10) * 100);
-      const depth = 500 - (completedQuestions * 50);
-      document.getElementById('rig').style.transform = `translateX(${-320 + completedQuestions * 64}px)`;
+      const percent = Math.round((completedQuestions / 12) * 100);
+      const depth = Math.round(500 - completedQuestions * (500 / 12));
+      document.getElementById('rig').style.transform = `translateX(${-320 + completedQuestions * (640 / 12)}px)`;
 
-      document.getElementById('valStage').innerText = `${Math.min(completedQuestions, 10)} / 10`;
+      document.getElementById('valStage').innerText = `${Math.min(completedQuestions, 12)} / 12`;
       document.getElementById('valReeled').innerText = `${percent}%`;
       document.getElementById('barReeled').style.width = `${percent}%`;
       document.getElementById('valDepth').innerText = `${depth} m`;
@@ -1234,7 +1256,7 @@
         tensionVal.style.color = '#00f0ff';
         tensionFill.style.width = '50%';
         tensionFill.style.background = 'var(--accent-cyan)';
-      } else if (completedQuestions < 10) {
+      } else if (completedQuestions < 12) {
         tensionVal.innerText = 'HIGH';
         tensionVal.style.color = '#ffaa00';
         tensionFill.style.width = '80%';
